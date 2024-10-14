@@ -11,7 +11,7 @@ double BlackScholesPathIndependent( double Expiry,
 									double q,
 									unsigned long NumberOfPaths){
 
-	double fixedPart = (r - Vol*Vol/2)*Expiry;
+	double fixedPart = (r - Vol*Vol/2 - q )*Expiry;
 	double sumPayOff = 0 ;
 
 	for (unsigned long i = 0 ; i < NumberOfPaths; i++){
@@ -21,7 +21,7 @@ double BlackScholesPathIndependent( double Expiry,
 	 
 	}
 	double expectedPayOff = sumPayOff/NumberOfPaths;
-	expectedPayOff *= exp(-r*Expiry)
+	expectedPayOff *= exp(-r*Expiry);
 
 	return expectedPayOff;
 }
