@@ -3,7 +3,6 @@
 #include "../Payoff/Payoff.h"
 
 double BlackScholesPathIndependent(const PayOff& thePayOff,
-									double Expiry,
 									double Spot,
 									double Vol,
 									double r,

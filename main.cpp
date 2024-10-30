@@ -1,8 +1,8 @@
 #include <iostream>
 #include "Module/BlackScholes/BlackScholes.cpp"
 #include "Module/Random/Random.cpp"
-#include "Module/Payoff/Payoff.cpp"
-
+#include "Module/Payoff/Vanilla/Vanilla.cpp"
+#include "Module/Payoff/Payoff.h"
 using namespace std;
 
 int main(){
@@ -17,10 +17,9 @@ int main(){
 	double q = 0.4/100;
 	unsigned long NumberOfPaths = 100000;
 	double a = GetOneGaussianByBoxMuller();
-	PayOff* basePayoff;
-	basePayoff = new PayOffCall(Strike);
-	double call = BlackScholesPathIndependent( *basePayoff,
-									  Expiry,
+	VanillaCall basePayoff(Strike,Expiry);
+	//basePayoff =  VanillaCall(Strike,Expiry);
+	double call = BlackScholesPathIndependent(basePayoff ,
 									 Spot,
 									 Vol,
 									 r,
