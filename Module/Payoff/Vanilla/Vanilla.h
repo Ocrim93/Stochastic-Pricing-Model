@@ -9,7 +9,7 @@ class VanillaCall : public PayOff{
 		virtual ~VanillaCall(){}
 		virtual PayOff* clone() const;
 		virtual double operator()(double Spot) const;
-		virtual double GetExpiry() const;
+		double GetExpiry() const;
 	private:
 		double Strike;
 		double Expiry;
@@ -22,7 +22,7 @@ class VanillaPut : public PayOff{
 		virtual ~VanillaPut(){}
 		virtual PayOff* clone() const;
 		virtual double operator()(double Spot) const;
-		virtual double GetExpiry() const;
+		double GetExpiry() const;
 	private:
 		double Strike;
 		double Expiry;
