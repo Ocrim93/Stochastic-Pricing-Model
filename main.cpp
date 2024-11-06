@@ -7,6 +7,24 @@ using namespace std;
 
 int main(){
 
+	int x = 5;
+	int y = 10;
+	
+	int*  const ptr = &x;
+
+	cout<< " a : " << x << endl;
+	cout<< " &a : " << &x << endl;
+	cout<< " *ptr : " << *ptr << endl;
+	cout<< " ptr : " << ptr << endl;
+
+	ptr = &y;
+
+	cout<< " a : " << x << endl;
+	cout<< " &a : " << &x << endl;
+	cout<< " *ptr : " << *ptr << endl;
+	cout<< " ptr : " << ptr << endl;
+	return 0;
+
 
 	std::cout << "Ciao Mirco "<< std::endl;
 	double Expiry = 1;
