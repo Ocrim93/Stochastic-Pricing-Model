@@ -26,3 +26,12 @@ double DoubleDigital::GetExpiry()
 {
 	return Expiry;
 }
+
+double DoubleDigital::Value(double Spot,
+						  double Vol,
+						  double r,
+						  double q,
+						  unsigned long NumberOfPaths) const
+{
+	return  BlackScholesPathIndependent( *this->clone() , Spot,Vol,r, q,NumberOfPaths);
+}
