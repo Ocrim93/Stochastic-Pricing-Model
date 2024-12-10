@@ -10,13 +10,25 @@ class PayOff{
 		//Making base class destructor virtual guarantees that the object of derived class is destructed properly.
 		virtual ~PayOff(){}
 		virtual PayOff* clone() const=0;
-		virtual double Value() const = 0;
+		virtual double Value(double Expiry_, double Spot_, double Vol_, double r_, double q_) const = 0 ;
+		
+		double Value_perVol(double Vol_) const;
+		double Vega_perVol(double Vol_) const;
+		double ImpliedVolNewtonRaphson(double MtM, double starting, double accuracy) const;
+		double ImpliedVolBisection(double MtM, double Low, double High, double  accuracy ) const;
+		double delta() const;
+
 	//overloading operator()
 		// const method 
 	// being a virtual function, the operator() has a =0 after it. 
 	// This means that that it is a pure virtual function. A pure virtual function has the property that it does  
 	// not need to be defined in the base class and must be defined in an inherited class 
-	virtual double operator()(double Spot) const = 0;
+		virtual double operator()(double Spot_) const = 0;
+		double Expiry;
+		double Spot;
+		double Vol;
+		double r;
+		double q;
 
 	private:
 };

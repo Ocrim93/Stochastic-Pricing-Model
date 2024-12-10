@@ -8,8 +8,8 @@ double NewtonRaphson(double Target,
 					 const T& Object)
 
 {	
-	printf("Startin NewtonRaphson \n");
-	clock_t t = clock()
+	printf("Starting NewtonRaphson \n");
+	clock_t t = clock();
 	double y = (Object.*Value)(Start);
 	double x = Start;
 	while( fabs( y- Target) > accuracy)

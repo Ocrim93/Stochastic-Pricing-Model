@@ -1,13 +1,22 @@
 #include "Vanilla.h"
 #include <algorithm>
 #include "../../BlackScholes/BlackScholes.cpp"
-#include "../../ImpliedVolatility/Bisection.h"
 
-VanillaCall::VanillaCall(double Strike_, double Expiry_, double Spot_ ,double Vol_ ,double r_, double q_ )
-	: Strike(Strike_), Expiry(Expiry_),Spot(Spot_),  Vol(Vol_), r(r_), q(q_)
+
+VanillaCall::VanillaCall(double Strike_)
+	: Strike(Strike_)
 {
 	this->NumberOfPaths = 1e6;
-	this->accuracy = 1e-4;
+}
+VanillaCall::VanillaCall(double Strike_, double Expiry_, double Spot_ ,double Vol_ ,double r_, double q_ )
+	: Strike(Strike_)
+{	
+	Expiry = Expiry_;
+	Spot = Spot_;
+	Vol = Vol_;
+	r= r_;
+	q= q_;
+	NumberOfPaths = 1e6;
 }
 
 double VanillaCall::operator() (double Spot) const
@@ -20,21 +29,15 @@ PayOff* VanillaCall::clone() const
 	return new VanillaCall(*this);
 }
 
-double VanillaCall::Value() const
+double VanillaCall::Value(double Expiry_ = 0.0 , double Spot_ = 0.0, double Vol_= 0.0, double r_ = 0.0 , double q_ = 0.0) const
 {	
-	return  BlackScholesPathIndependent( *this , Expiry, Spot,Vol,r, q, NumberOfPaths);
-}
+	if (Expiry_ == 0.0) Expiry_ = Expiry;
+	if (Spot_ == 0.0) Spot_ = Spot;
+	if (Vol_ == 0.0) Vol_ = Vol;
+	if (r_ == 0.0) r_ = r;
+	if (q_ == 0.0) q_ = q;
 
-
-double VanillaCall::Value_perVol(double Vol_) const
-{
-	return BlackScholesPathIndependent( *this ,Expiry, Spot,Vol_,r, q, NumberOfPaths);
-}
-
-
-double VanillaCall::ImpliedVolBisection(double MtM, double Low, double High) const
-{	
-	return Bisection< VanillaCall, &VanillaCall::Value_perVol>(MtM, Low, High,accuracy, *this);
+	return  BlackScholesPathIndependent( *this , Expiry_, Spot_,Vol_,r_, q_, NumberOfPaths);
 }
 
 void VanillaCall::SetNumberOfPaths(unsigned long NumberOfPaths_)
@@ -42,9 +45,5 @@ void VanillaCall::SetNumberOfPaths(unsigned long NumberOfPaths_)
 	this->NumberOfPaths = NumberOfPaths_;
 }
 
-void VanillaCall::SetAccuracy(double accuracy_)
-{
-	this->accuracy = accuracy_;
-}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% VanillaPut %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

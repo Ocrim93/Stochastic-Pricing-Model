@@ -1,26 +1,22 @@
 #ifndef VANILLA_H
 #define VANILLA_H
 
-#include "../Payoff.h"
-#include "../../Taxonomy.h"
+#include "../Payoff.cpp"
 
-class VanillaCall : private PayOff{
+class VanillaCall : public PayOff{
 	public:
-		VanillaCall(double Strike_, double Expiry_, double Spot_ ,double Vol,double r_, double q_ );
+		VanillaCall(double Strike_);
+		VanillaCall(double Strike_, double Expiry_, double Spot_ ,double Vol_,double r_, double q_ );
 		virtual ~VanillaCall(){}
 		virtual PayOff* clone() const;
 		virtual double operator()(double Spot) const;
-		double Value() const ;
-		double ImpliedVolBisection(double MtM, double Low, double High) const;
-		double Value_perVol(double Vol_) const;
-		void SetNumberOfPaths(unsigned long NumberOfPaths_) ;
-		void SetAccuracy(double accuracy_);
+		virtual double Value(double Expiry_ , double Spot_, double Vol_, double r_, double q_ ) const ;
 
+		void SetNumberOfPaths(unsigned long NumberOfPaths_) ;
 
 		unsigned long NumberOfPaths;
-		double accuracy;
 
-	 	double Expiry;
+		double Expiry;
 		double Spot;
 		double Vol;
 		double r;

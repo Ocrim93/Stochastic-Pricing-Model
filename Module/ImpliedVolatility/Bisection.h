@@ -8,7 +8,7 @@ double Bisection(double Target,
 				 double accuracy,
 				 const T& Object)
 {	
-	printf("Startin Bisection \n");
+	printf("Starting Bisection \n");
 	clock_t t = clock();
 	double x = 0.5*(High+Low);
 	double y = (Object.*Value)(x);

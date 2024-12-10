@@ -20,10 +20,13 @@ int main(){
 	//basePayoff =  VanillaCall(Strike,Expiry);
 	value = call.Value();
 
-	double implVol = call.ImpliedVolBisection(2.12,0,0.3);
+	double implVolBis = call.ImpliedVolBisection(2.12,0,0.3);
+	double NR = call.ImpliedVolNewtonRaphson(2.12,0.2);
 
 	std::cout << value<< std::endl;
-	std::cout << implVol<< std::endl;
+	std::cout << implVolBis<< std::endl;
+	std::cout << NR<< std::endl;
+
 
 
 }
