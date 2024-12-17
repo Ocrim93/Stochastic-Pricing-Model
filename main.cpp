@@ -1,8 +1,6 @@
 #include <iostream>
-// #include "Module/BlackScholes/BlackScholes.cpp"
-//	#include "Module/Random/Random.cpp"
 #include "Module/Payoff/Vanilla/Vanilla.cpp"
-//#include "Module/ImpliedVolatility/Bisection.h"
+#include <tuple>
 using namespace std;
 
 int main(){
@@ -20,13 +18,22 @@ int main(){
 	//basePayoff =  VanillaCall(Strike,Expiry);
 	value = call.Value();
 
-	double implVolBis = call.ImpliedVolBisection(2.12,0,0.3);
-	double NR = call.ImpliedVolNewtonRaphson(2.12,0.2);
+	//double implVolBis = call.ImpliedVolBisection(2.12,0,0.3);
+	//double NR = call.ImpliedVolNewtonRaphson(2.12,0.2);
 
 	std::cout << value<< std::endl;
-	std::cout << implVolBis<< std::endl;
-	std::cout << NR<< std::endl;
+	//std::cout << implVolBis<< std::endl;
+	//std::cout << NR<< std::endl;
+	/*
+	auto fun = [](double x, double y) -> double {
+		return x*x*x + y*y;
+	};
+	double h = 1.e-4;
+	tuple<double,double> point(3.,4.);
+	int dir = 1;
 
-
-
-}
+	PartialDerivatives<decltype(fun), double,double>  pd(fun, h);
+	double v = pd.first_compute<0>(point);
+	std::cout << v<< std::endl;
+*/
+    }

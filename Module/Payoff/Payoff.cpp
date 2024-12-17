@@ -5,7 +5,7 @@
 
 double PayOff::Value_perVol(double Vol_) const
 {	
-	return Value(Expiry, Spot ,Vol_, r ,q);
+	return Value(Expiry, Spot ,Vol_,r);
 	
 }
 
@@ -15,7 +15,6 @@ double PayOff::Vega_perVol(double Vol_) const
 	return (Value_perVol(Vol_ + h ) - Value_perVol(Vol_ - h ))/(2*h);
 
 }
-
 double PayOff::ImpliedVolBisection(double MtM, double Low, double High, double  accuracy = 1.e-4 ) const
 {	
 	double impliedVol;
@@ -29,8 +28,8 @@ double PayOff::ImpliedVolNewtonRaphson(double MtM, double Start, double accuracy
 	return impliedVol;
 }
 
-double PayOff::delta() const
-{	
-	Greeks o(*this);
-	return o.delta();
+std::map<std::string,double> PayOff::Greeks() const
+{
+	Greeks greeks_obj(*this);
+	return greeks_obj.compute_Greeks();
 }

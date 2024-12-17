@@ -1,21 +1,23 @@
 #ifndef GREEKS_H
 #define GREEKS_H
-#include "./PartialDerivatives.h"
+//#include "../Payoff/Payoff.cpp"
+#include <tuple>
+#include <map>
+#include <string>
 
-template<typename PayOff_T>
 class Greeks {
 	public:
-		Greeks( const PayOff_T& PayOff_){}
-		~Greeks(){}
-		double Delta() const;
-		//double Vega() const;
-		//double Gamma() const;
-		//double Rho() const;
+		Greeks( PayOff* PayOffObject_);
+		~Greeks(){};
+
+		std::map<std::string,double> compute_Greeks() const;
+		
+		double step_size;
+		void SetStepSize(double StepSize_);
 
 	private:
-		PayOff_T PayOffObject;
-		PartialDerivatives DerivativeObject; 
-
+		PayOff* PayOffObject;
+		std::tuple<double,double> params;
 };
 
-#endif GREEKS_H
+#endif //GREEKS_H

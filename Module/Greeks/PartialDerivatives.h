@@ -18,39 +18,42 @@ auto apply( Func&& func, Tuple&& t)
 	return apply_impl(std::forward<Func>(func), std::forward<Tuple>(t), std::make_index_sequence<size>());
 }
 
-template<typename Func, typename Args> 
+template<typename Func, typename... Args> 
 class PartialDerivatives {
 	public:
 		PartialDerivatives(Func func_, double step_size_) : func(func_), h(step_size_){}
 
 		// function to compute the first partial derivative wrt i-th, std::get<I> needs an constant parameter at compile-time--> template
-		template< std::size_t I>
-		double first_compute(const std::tuple<Args...>& params, char method = 'C' ) const
+		template < std::size_t I >
+		double first_compute(const std::tuple<Args...>& params,char method = 'C' ) const
 		{
 			auto params_forward = params;
 			auto params_backward = params;
+			
 			double step_size = h;
-
 			switch(method)
 			{
-				case 'C':
+				case 'C': // Central Difference
 					std::get<I>(params_forward) += h;
 					std::get<I>(params_backward) -= h;
 					step_size = 2*h;
-				case 'F':
+					break;
+				case 'F': // Forward Difference
 					std::get<I>(params_forward) += h;
-				case 'B':
+					break;
+				case 'B': // Backward Difference
 					std::get<I>(params_backward) -= h;
+					break;
 			}
 			double f_forward = apply(func,params_forward);
 			double f_backward = apply(func,params_backward);
-
+			 // For Forward/Backward, we use simple formula: (f(x+h) - f(x-h)) / (2h)
 			return (f_forward - f_backward)/(step_size);
 
 		}
 
-		template< std::size_t I>
-		double second_compute(const std::tuple<Args...>& params, char method = 'C' ) const
+		template < std::size_t I >
+		double second_compute(const std::tuple<Args...>& params) const
 		{
 			auto params_forward = params;
 			auto params_backward = params;

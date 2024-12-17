@@ -1,6 +1,9 @@
 #ifndef PAYOFF_H
 #define PAYOFF_H
 
+#include <map>
+#include <string>
+
 class PayOff{
 
 	public:
@@ -10,13 +13,13 @@ class PayOff{
 		//Making base class destructor virtual guarantees that the object of derived class is destructed properly.
 		virtual ~PayOff(){}
 		virtual PayOff* clone() const=0;
-		virtual double Value(double Expiry_, double Spot_, double Vol_, double r_, double q_) const = 0 ;
+		virtual double Value(double Expiry_, double Spot_, double Vol_, double r_) const = 0 ;
 		
+		std::map<std::string,double> Greeks() const;
 		double Value_perVol(double Vol_) const;
 		double Vega_perVol(double Vol_) const;
 		double ImpliedVolNewtonRaphson(double MtM, double starting, double accuracy) const;
 		double ImpliedVolBisection(double MtM, double Low, double High, double  accuracy ) const;
-		double delta() const;
 
 	//overloading operator()
 		// const method 
@@ -28,7 +31,6 @@ class PayOff{
 		double Spot;
 		double Vol;
 		double r;
-		double q;
 
 	private:
 };
