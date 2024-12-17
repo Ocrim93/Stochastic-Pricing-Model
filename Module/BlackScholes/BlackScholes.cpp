@@ -1,17 +1,17 @@
 #include "BlackScholes.h"
-#include "../Random/Random.h"
+#include "../Random/Random.cpp"
 #include "../Payoff/Payoff.h"
 #include <cmath>
 
 
 double BlackScholesPathIndependent( const PayOff& thePayOff,
+									double Expiry,
 									double Spot,
 									double Vol,
 									double r,
 									double q,
 									unsigned long NumberOfPaths){
 
-	double Expiry = thePayOff.GetExpiry();
 	double fixedPart = (r - Vol*Vol/2 - q )*Expiry;
 	double sumPayOff = 0 ;
 

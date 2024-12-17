@@ -1,10 +1,16 @@
 #include "Vanilla.h"
-#include "../Payoff.h"
 #include <algorithm>
+#include "../../BlackScholes/BlackScholes.cpp"
+#include "../../Greeks/Greeks.h"
 
-VanillaCall::VanillaCall(double Strike_, double Expiry_) : Strike(Strike_), Expiry(Expiry_)
-{
-
+VanillaCall::VanillaCall(double Strike_, double Expiry_, double Spot_ ,double Vol_ ,double r_, double q_ = 0 )
+	: Strike(Strike_), q(q_)
+{	
+	Expiry = Expiry_;
+	Spot = Spot_;
+	Vol = Vol_;
+	r= r_;
+	NumberOfPaths = 1e6;
 }
 
 double VanillaCall::operator() (double Spot) const
@@ -17,28 +23,25 @@ PayOff* VanillaCall::clone() const
 	return new VanillaCall(*this);
 }
 
-double VanillaCall::GetExpiry() const
-{
-	return Expiry;
+double VanillaCall::Value(double Expiry_ = 0.0 , double Spot_ = 0.0, double Vol_= 0.0, double r_ = 0.0 ) const
+{	
+	if (Expiry_ == 0.0) Expiry_ = Expiry;
+	if (Spot_ == 0.0) Spot_ = Spot;
+	if (Vol_ == 0.0) Vol_ = Vol;
+	if (r_ == 0.0) r_ = r;
+
+	return  BlackScholesPathIndependent( *this , Expiry_, Spot_,Vol_,r_, q, NumberOfPaths);
 }
 
-VanillaPut::VanillaPut(double Strike_, double Expiry_) : Strike(Strike_), Expiry(Expiry_)
+void VanillaCall::SetNumberOfPaths(unsigned long NumberOfPaths_)
 {
-
-}
-
-double VanillaPut::operator() (double Spot) const
-{
-	return std::max(Strike - Spot,0.0);
+	this->NumberOfPaths = NumberOfPaths_;
 }
 
 
-PayOff* VanillaPut::clone() const
+void VanillaCall::Hedging_Greeks()
 {
-	return new VanillaPut(*this);
-}
-
-double VanillaPut::GetExpiry() const
-{
-	return Expiry;
-}
+	Greeks< VanillaCall,&VanillaCall::Value> greeksObj(*this);
+	double d = greeksObj.Delta();
+} 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% VanillaPut %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
