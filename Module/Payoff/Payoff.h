@@ -15,7 +15,7 @@ class PayOff{
 		virtual PayOff* clone() const=0;
 		virtual double Value(double Expiry_, double Spot_, double Vol_, double r_) const = 0 ;
 		
-		std::map<std::string,double> Greeks() const;
+		std::map<std::string,double> Hedging_Greeks() const;
 		double Value_perVol(double Vol_) const;
 		double Vega_perVol(double Vol_) const;
 		double ImpliedVolNewtonRaphson(double MtM, double starting, double accuracy) const;
