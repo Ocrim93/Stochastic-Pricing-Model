@@ -22,6 +22,6 @@ double Bisection(double Target,
 		y = (Object.*Value)(x);
 	}while( fabs( y - Target) > accuracy );
 	t = clock() -t;
-	printf(" Bisection took %0.3f seconds\n", ((float)t)/CLOCKS_PER_SEC);
+	printf(" Bisection took %0.3f seconds, accuracy %0.4f --> %0.4f %% \n", ((float)t)/CLOCKS_PER_SEC, accuracy,x*100);
 	return x;
 }

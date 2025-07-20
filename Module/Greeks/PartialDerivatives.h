@@ -21,11 +21,11 @@ auto apply( Func&& func, Tuple&& t)
 template<typename Func, typename... Args> 
 class PartialDerivatives {
 	public:
-		PartialDerivatives(Func func_, double step_size_) : func(func_), h(step_size_){}
+		PartialDerivatives(Func func_) : func(func_){}
 
 		// function to compute the first partial derivative wrt i-th, std::get<I> needs an constant parameter at compile-time--> template
 		template < std::size_t I >
-		double first_compute(const std::tuple<Args...>& params,char method = 'C' ) const
+		double first_compute(const std::tuple<Args...>& params,char method = 'C', double h  = 1e-2) const
 		{
 			auto params_forward = params;
 			auto params_backward = params;
@@ -47,13 +47,14 @@ class PartialDerivatives {
 			}
 			double f_forward = apply(func,params_forward);
 			double f_backward = apply(func,params_backward);
+			//std::cout<< f_forward << " " << f_backward << " " <<step_size << std::endl;
 			 // For Forward/Backward, we use simple formula: (f(x+h) - f(x-h)) / (2h)
 			return (f_forward - f_backward)/(step_size);
 
 		}
 
 		template < std::size_t I >
-		double second_compute(const std::tuple<Args...>& params) const
+		double second_compute(const std::tuple<Args...>& params, double h  = 1e-2 ) const
 		{
 			auto params_forward = params;
 			auto params_backward = params;
@@ -72,7 +73,6 @@ class PartialDerivatives {
 
 	private:
 		Func func;
-		double  h;
 
 };
 

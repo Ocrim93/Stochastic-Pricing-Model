@@ -14,7 +14,6 @@ class VanillaCall : public PayOff{
 		void SetNumberOfPaths(unsigned long NumberOfPaths_) ;
 
 		unsigned long NumberOfPaths;
-		void Hedging_Greeks(); 
 
 	private:
 		double Strike;

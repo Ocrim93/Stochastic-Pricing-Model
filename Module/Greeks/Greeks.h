@@ -1,23 +1,22 @@
 #ifndef GREEKS_H
 #define GREEKS_H
-//#include "../Payoff/Payoff.cpp"
 #include <tuple>
 #include <map>
 #include <string>
+
 
 class Greeks {
 	public:
 		Greeks( PayOff* PayOffObject_);
 		~Greeks(){};
 
-		std::map<std::string,double> compute_Greeks() const;
+		std::map<std::string,double> compute_Greeks() ;
 		
-		double step_size;
-		void SetStepSize(double StepSize_);
+		std::map<std::string, double> step_size_map;
 
 	private:
 		PayOff* PayOffObject;
-		std::tuple<double,double> params;
+		std::tuple<double,double,double,double> params;
 };
 
 #endif //GREEKS_H

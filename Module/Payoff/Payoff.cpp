@@ -21,15 +21,15 @@ double PayOff::ImpliedVolBisection(double MtM, double Low, double High, double  
 	impliedVol = Bisection< PayOff, &PayOff::Value_perVol>(MtM, Low, High,accuracy, *this);
 	return impliedVol;
 }
-double PayOff::ImpliedVolNewtonRaphson(double MtM, double Start, double accuracy = 1.e-4) const
+double PayOff::ImpliedVolNewtonRaphson(double MtM, double Start, double accuracy = 1.e-3) const
 {	
 	double impliedVol;
 	impliedVol = NewtonRaphson<PayOff,&PayOff::Value_perVol,&PayOff::Vega_perVol >(MtM, Start ,accuracy, *this);
 	return impliedVol;
 }
 
-std::map<std::string,double> PayOff::Greeks() const
+std::map<std::string,double> PayOff::Hedging_Greeks() const
 {
-	Greeks greeks_obj(*this);
+	Greeks greeks_obj(this->clone());
 	return greeks_obj.compute_Greeks();
 }
