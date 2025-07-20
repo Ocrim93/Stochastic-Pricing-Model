@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Module/Payoff/Vanilla/Vanilla.cpp"
+#include "Payoff/Vanilla/Vanilla.cpp"
 #include <tuple>
 #include <string>
 #include <map>
