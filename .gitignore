@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .DS_Store
+*/__pycache__/
 # Compiled Object files
 *.slo
 *.lo
