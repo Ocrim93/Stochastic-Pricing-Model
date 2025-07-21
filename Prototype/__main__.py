@@ -26,10 +26,16 @@ parser.add_argument(
 	action="store",
 	help = "End Business date for Yahoo Finance source"
 	)
+parser.add_argument(
+	"-o",
+	"--output",
+	required = False,
+	action="store",
+	default = './Output',
+	help = "Output folder path"
+	)
 
 args = parser.parse_args()
 
 start_date = datetime.strptime(args.start, "%d%b%y")
 end_date = datetime.strptime(args.end, "%d%b%y") if args.end != None else None 
-fyahoo = Client(args.ticker, start_date, end_date)
-print(fyahoo.fetch()) 
