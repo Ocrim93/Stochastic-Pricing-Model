@@ -44,3 +44,9 @@ class Yahoo_Client:
 			
 		return call_put
 
+	def fetch_dividend_yield(self) -> float:
+		try :
+			return self.client.info['dividendYield']
+		except :
+			logger.warning(f'{self.ticker} dividendYiled not found')
+			return 0.
