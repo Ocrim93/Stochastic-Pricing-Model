@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from datetime import datetime 
 from Module.yahoo_finance.client import Yahoo_Client 
 from instrument import create_folder
+from risk_free_rate import Risk_Free_Rate
 
 parser = ArgumentParser()
 
@@ -25,7 +26,7 @@ parser.add_argument(
 	"-s",
 	"--start",
 	required = False,
-	default = "01Jan90",
+	default = "01Jan1990",
 	action="store",
 	help = "Start Business date for Yahoo Finance source, format: %d%b%y"
 	)
@@ -67,17 +68,17 @@ args = parser.parse_args()
 
 start_date = datetime.strptime(args.start, "%d%b%Y")
 end_date = datetime.strptime(args.end, "%d%b%Y") if args.end != None else datetime.now() 
-
 if args.source == 'yahoo': 
 	client = Yahoo_Client(args.ticker, start_date, end_date)
-
 if args.action == 'volatility_surface':
-	pass
+	ir_client = Yahoo_Client("SR1=F", end_date,end_date)
+	r = Risk_Free_Rate.SOFR(ir_client.fetch()['CLOSE'])
+	print(r)
 if args.action == 'financials':
 	data = client.fetch_financials()
 if args.action == 'price':
 	data = client.fetch()
-
+print(data)
 if args.save :
 	start = datetime.strftime(start_date,"%d%b%Y")
 	end = datetime.strftime(end_date,"%d%b%Y")

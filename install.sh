@@ -1,4 +1,4 @@
 #!/bin/bash
 
-pip install "poerty>=2"
+pip install "poetry>=2"
 poetry install

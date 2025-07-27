@@ -5,6 +5,7 @@ class Measure(Enum):
 	IMPLIED_VOLATILITY = 'impliedVolatility'
 	BID = 'bid'
 	ASK = 'ask'
+	CLOSE = 'Close'
 	CURRENCY = 'currency'
 	VOLUME= 'volume'
 	OPEN_INTEREST = 'openInterest'

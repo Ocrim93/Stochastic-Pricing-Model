@@ -2,7 +2,7 @@ from datetime import datetime
 import pandas as pd 
 from loguru import logger 
 import yfinance as yf
-from .instrument import formatting_options
+from .instrument import formatting_data
 
 class Yahoo_Client:
 	def __init__(self,
@@ -17,14 +17,17 @@ class Yahoo_Client:
 		self.period = period
 		logger.info(f'Creating Yahoo Client')
 		self.client = yf.Ticker(ticker)
+		print(self.client.info)
 
 	def fetch(self) -> pd.DataFrame:
 		logger.info(f"starting fetch {self.ticker} prices")
 		if self.period == "":
 			df = self.client.history(start = self.start_date, end=self.end_date)
 		df = self.client.history(start = self.start_date, end=self.end_date)
-
-		return df
+		if df.empty:
+			logger.warning(f" price {self.ticker} empty dataframe")
+		formatted_df = formatting_data(df)
+		return formatted_df
 
 	def fetch_financials(self) -> pd.DataFrame:
 		logger.info(f'fetch financials for {self.ticker}')
@@ -39,8 +42,8 @@ class Yahoo_Client:
 		call_put = {}
 		for d in self.client.options:
 			options = self.client.option_chain(d)
-			call_put[d] = (formatting_options(options.calls),
-						   formatting_options(options.puts))
+			call_put[d] = (formatting_data(options.calls),
+						   formatting_data(options.puts))
 			
 		return call_put
 
