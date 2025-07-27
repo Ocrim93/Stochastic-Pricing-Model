@@ -46,7 +46,7 @@ Prototype to fetch and compute:
     --end "01Jan2009" \
     --source "yahoo"  \
     --output "./" \
-    --save True. \
+    --save True \
 ```
 
 
