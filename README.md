@@ -34,10 +34,12 @@ Prototype to fetch and compute:
  - ... 
  
  Install dependency
-  > sh install.sh
-
+  ```
+   sh install.sh
+ ```
  Run the Protype
- > python -m Prototype \
+ ```
+  python -m Prototype \
     --ticker  "AAPL" \
     --action "price" \
     --start "01Jan2008" \
@@ -45,6 +47,6 @@ Prototype to fetch and compute:
     --source "yahoo"  \
     --output "./" \
     --save True. \
-
+```
 
 
