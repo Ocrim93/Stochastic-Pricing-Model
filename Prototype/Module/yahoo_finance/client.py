@@ -3,6 +3,8 @@ import pandas as pd
 from loguru import logger 
 import yfinance as yf
 from .instrument import formatting_data
+from .yahoo_measure import map_to_formating,map_from_formatting
+from measure import Measure
 
 class Yahoo_Client:
 	def __init__(self,
@@ -17,7 +19,6 @@ class Yahoo_Client:
 		self.period = period
 		logger.info(f'Creating Yahoo Client')
 		self.client = yf.Ticker(ticker)
-		print(self.client.info)
 
 	def fetch(self) -> pd.DataFrame:
 		logger.info(f"starting fetch {self.ticker} prices")
@@ -47,9 +48,17 @@ class Yahoo_Client:
 			
 		return call_put
 
+	def fetch_current_price(self):
+		df = self.fetch()
+		df = df.sort_values(by = Measure.DATE, ascending = True)
+		logger.info(f'retrieve current close price {self.ticker} - {self.start_date}')
+		return df[Measure.CLOSE].values[0]
+
+
 	def fetch_dividend_yield(self) -> float:
 		try :
-			return self.client.info['dividendYield']
+			logger.info(f'fetching {self.ticker} dividend yield')
+			return self.client.info[map_from_formatting()[Measure.DIVIDEND_YIELD]]
 		except :
 			logger.warning(f'{self.ticker} dividendYiled not found')
-			return 0.
+			return 0

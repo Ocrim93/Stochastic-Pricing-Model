@@ -71,14 +71,14 @@ end_date = datetime.strptime(args.end, "%d%b%Y") if args.end != None else dateti
 if args.source == 'yahoo': 
 	client = Yahoo_Client(args.ticker, start_date, end_date)
 if args.action == 'volatility_surface':
-	ir_client = Yahoo_Client("SR1=F", end_date,end_date)
-	r = Risk_Free_Rate.SOFR(ir_client.fetch()['CLOSE'])
-	print(r)
+	ir_client = Yahoo_Client("SR1=F", start_date,end_date)
+	r =  Risk_Free_Rate.SOFR(ir_client.fetch_current_price())
+	dividend = client.fetch_dividend_yield()
+
 if args.action == 'financials':
 	data = client.fetch_financials()
 if args.action == 'price':
 	data = client.fetch()
-print(data)
 if args.save :
 	start = datetime.strftime(start_date,"%d%b%Y")
 	end = datetime.strftime(end_date,"%d%b%Y")
