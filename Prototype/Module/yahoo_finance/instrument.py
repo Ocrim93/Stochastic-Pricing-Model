@@ -2,10 +2,10 @@ from  Module.yahoo_finance.yahoo_measure import map_to_formating
 import pandas as pd
 import os 
 
-def formatting_data(data : pd.DataFrame, column_set : list = []  ):
+def formatting_data(data : pd.DataFrame,key : str,  column_set : list = []  ):
 	df = data.copy()
 	df = df.reset_index()
-	column_map = map_to_formating()
+	column_map = map_to_formating(key)
 	df = df.rename(columns = column_map)
 	
 	df = df[[col for col in column_map.values() if col in df.columns]]

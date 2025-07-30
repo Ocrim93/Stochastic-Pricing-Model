@@ -27,7 +27,7 @@ class Yahoo_Client:
 		df = self.client.history(start = self.start_date, end=self.end_date)
 		if df.empty:
 			logger.warning(f" price {self.ticker} empty dataframe")
-		formatted_df = formatting_data(df)
+		formatted_df = formatting_data(df,'price')
 		return formatted_df
 
 	def fetch_financials(self) -> pd.DataFrame:
@@ -43,8 +43,8 @@ class Yahoo_Client:
 		call_put = {}
 		for d in self.client.options:
 			options = self.client.option_chain(d)
-			call_put[d] = (formatting_data(options.calls),
-						   formatting_data(options.puts))
+			call_put[d] = (formatting_data(options.calls, 'volatility_surface'),
+						   formatting_data(options.puts,'volatility_surface'))
 			
 		return call_put
 
@@ -58,7 +58,7 @@ class Yahoo_Client:
 	def fetch_dividend_yield(self) -> float:
 		try :
 			logger.info(f'fetching {self.ticker} dividend yield')
-			return self.client.info[map_from_formatting()[Measure.DIVIDEND_YIELD]]
+			return self.client.info[map_from_formatting('info',Measure.DIVIDEND_YIELD)]
 		except :
-			logger.warning(f'{self.ticker} dividendYiled not found')
+			logger.warning(f'{self.ticker} dividendYield not found')
 			return 0

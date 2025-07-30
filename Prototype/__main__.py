@@ -3,6 +3,7 @@ from datetime import datetime
 from Module.yahoo_finance.client import Yahoo_Client 
 from instrument import create_folder
 from risk_free_rate import Risk_Free_Rate
+from volatility_surface import Volatility_Surface
 
 parser = ArgumentParser()
 
@@ -66,24 +67,39 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+ticker = args.ticker
 start_date = datetime.strptime(args.start, "%d%b%Y")
 end_date = datetime.strptime(args.end, "%d%b%Y") if args.end != None else datetime.now() 
+
 if args.source == 'yahoo': 
-	client = Yahoo_Client(args.ticker, start_date, end_date)
+	client = Yahoo_Client(ticker, start_date, end_date)
+
 if args.action == 'volatility_surface':
+	options = client.fetch_options()
+	spot_price = client.fetch_current_price()
 	ir_client = Yahoo_Client("SR1=F", start_date,end_date)
-	r =  Risk_Free_Rate.SOFR(ir_client.fetch_current_price())
+	risk_free_rate =  Risk_Free_Rate.SOFR(ir_client.fetch_current_price())
 	dividend = client.fetch_dividend_yield()
+
+	vol = Volatility_Surface( ticker,
+				 			  options, 
+				 			  start_date,
+				 			  spot_price,
+				 			  risk_free_rate,
+				 			  dividend)
+	vol.compute()
 
 if args.action == 'financials':
 	data = client.fetch_financials()
+
 if args.action == 'price':
 	data = client.fetch()
+print(data)
 if args.save :
 	start = datetime.strftime(start_date,"%d%b%Y")
 	end = datetime.strftime(end_date,"%d%b%Y")
 	folder_output = f'{args.output}/{args.ticker}'
 	create_folder(folder_output)
-	filename = f'{args.ticker}_{args.action}_{start}-{end}_{args.source}'
+	filename = f'{ticker}_{args.action}_{start}-{end}_{args.source}'
 	data.to_csv(f'{folder_output}/{filename}.csv')
 
