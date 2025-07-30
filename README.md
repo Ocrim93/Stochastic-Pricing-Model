@@ -22,5 +22,31 @@ Key ingredients:
   - European Call Option 
   - European Put Option
   - Double Digital Option  
-    
+
+# Prototype
+
+Prototype to fetch and compute:
+ - Volatility surface 
+ - price underlying
+ - financials info
+ - Risk-free rate from SOFR 
+ - Yahoo Finance and Barchart sources
+ - ... 
+ 
+ Install dependency
+  ```
+   sh install.sh
+ ```
+ Run the Protype
+ ```
+  python -m Prototype \
+    --ticker  "AAPL" \
+    --action "price" \
+    --start "01Jan2008" \
+    --end "01Jan2009" \
+    --source "yahoo"  \
+    --output "./" \
+    --save True \
+```
+
 
