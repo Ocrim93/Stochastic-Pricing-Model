@@ -1,6 +1,6 @@
-## Stochastic-Pricing-Model
+# Stochastic-Pricing-Model
 
-# Vanilla-and-Exotic-Option-Pay-off
+## Vanilla-and-Exotic-Option-Pay-off
 Monte Carlo program which uses a polymorphic class to determine the pay-off of the Vanilla and Exotic  options to be priced.
 
 How inheritance could be used to implement a PayOff class that is closed for modification but open for extension.
@@ -23,7 +23,7 @@ Key ingredients:
   - European Put Option
   - Double Digital Option  
 
-# Prototype
+## Prototype
 
 Prototype to fetch and compute:
  - Volatility surface 

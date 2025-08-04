@@ -1,9 +1,10 @@
 from argparse import ArgumentParser
 from datetime import datetime 
 from Module.yahoo_finance.client import Yahoo_Client 
-from instrument import create_folder
+from instrument import create_folder, business_date
 from risk_free_rate import Risk_Free_Rate
 from volatility_surface import Volatility_Surface
+from loguru import logger
 
 parser = ArgumentParser()
 
@@ -27,7 +28,6 @@ parser.add_argument(
 	"-s",
 	"--start",
 	required = False,
-	default = "01Jan1990",
 	action="store",
 	help = "Start Business date for Yahoo Finance source, format: %d%b%y"
 	)
@@ -68,8 +68,13 @@ parser.add_argument(
 args = parser.parse_args()
 
 ticker = args.ticker
-start_date = datetime.strptime(args.start, "%d%b%Y")
+start_date = datetime.strptime(args.start, "%d%b%Y") if args.start != None else datetime.now() 
 end_date = datetime.strptime(args.end, "%d%b%Y") if args.end != None else datetime.now() 
+
+start_date = business_date(start_date)
+end_date = business_date(end_date)
+logger.info(f'start_date : {start_date} ')
+logger.info(f'end_date : {end_date} ')
 
 if args.source == 'yahoo': 
 	client = Yahoo_Client(ticker, start_date, end_date)
@@ -77,17 +82,17 @@ if args.source == 'yahoo':
 if args.action == 'volatility_surface':
 	options = client.fetch_options()
 	spot_price = client.fetch_current_price()
-	ir_client = Yahoo_Client("SR1=F", start_date,end_date)
+	ir_client = Yahoo_Client("SR1=F", start_date, end_date)
 	risk_free_rate =  Risk_Free_Rate.SOFR(ir_client.fetch_current_price())
 	dividend = client.fetch_dividend_yield()
 
 	vol = Volatility_Surface( ticker,
 				 			  options, 
-				 			  start_date,
+				 			  start_date.strftime('%d-%m-%Y'),
 				 			  spot_price,
 				 			  risk_free_rate,
 				 			  dividend)
-	vol.compute()
+	vol.run()
 
 if args.action == 'financials':
 	data = client.fetch_financials()

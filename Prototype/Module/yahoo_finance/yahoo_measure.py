@@ -4,7 +4,7 @@ class Measure_map:
 
 	volatility_surface =  {
 			'strike' : Measure.STRIKE ,
-			'ImpliedVolatility' : Measure.SOURCE_IMPLIED_VOLATILITY ,
+			'impliedVolatility' : Measure.SOURCE_IMPLIED_VOLATILITY ,
 			'bid' : Measure.BID,
 			'ask' : Measure.ASK ,
 			'lastPrice' : Measure.LAST_PRICE, 

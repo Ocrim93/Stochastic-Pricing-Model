@@ -1,3 +1,8 @@
+"""
+	***Yahoo source does not support historical option prices***
+"""
+
+
 from datetime import datetime
 import pandas as pd 
 from loguru import logger 
@@ -5,6 +10,7 @@ import yfinance as yf
 from .instrument import formatting_data
 from .yahoo_measure import map_to_formating,map_from_formatting
 from measure import Measure
+from instrument import chang_date_formatting
 
 class Yahoo_Client:
 	def __init__(self,
@@ -15,9 +21,9 @@ class Yahoo_Client:
 		
 		self.ticker = ticker
 		self.start_date = start_date
-		self.end_date = end_date
+		self.end_date = end_date if start_date !=end_date else None
 		self.period = period
-		logger.info(f'Creating Yahoo Client')
+		logger.info(f'creating Yahoo Client')
 		self.client = yf.Ticker(ticker)
 
 	def fetch(self) -> pd.DataFrame:
@@ -35,25 +41,28 @@ class Yahoo_Client:
 		return self.client.financials
 
 	def fetch_options(self) -> {}:
-		logger.info(f'fetch options for {self.ticker}')
 		'''
+			***Yahoo source does not support historical option prices***
+
 			return dictionary
-			{Expiration_Date : (call_DataFrame, put_DataFrame)}
+			{Expiration_Date : (call_DataFrame, put_DataFrame)} 
 		'''
+		logger.info(f'fetch options for {self.ticker}')
 		call_put = {}
 		for d in self.client.options:
 			options = self.client.option_chain(d)
-			call_put[d] = (formatting_data(options.calls, 'volatility_surface'),
-						   formatting_data(options.puts,'volatility_surface'))
-			
+			t_exp = chang_date_formatting(d, "%Y-%m-%d", "%d-%m-%Y")
+			call_put['call'] = {t_exp :  formatting_data(options.calls, 'volatility_surface')}
+			call_put['put'] = { t_exp :  formatting_data(options.puts,'volatility_surface')}
+		
 		return call_put
 
 	def fetch_current_price(self):
 		df = self.fetch()
 		df = df.sort_values(by = Measure.DATE, ascending = True)
-		logger.info(f'retrieve current close price {self.ticker} - {self.start_date}')
-		return df[Measure.CLOSE].values[0]
-
+		closing_price = df[Measure.CLOSE].values[0]
+		logger.info(f' current closing price {self.ticker}: {closing_price} {self.start_date}')
+		return closing_price
 
 	def fetch_dividend_yield(self) -> float:
 		try :
