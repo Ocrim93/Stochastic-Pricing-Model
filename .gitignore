@@ -5,6 +5,8 @@
 Output/
 
 note.txt
+
+Prototype/.ipynb_checkpoints/
 # Compiled Object files
 *.slo
 *.lo
