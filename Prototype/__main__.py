@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from datetime import datetime 
-from Module.yahoo_finance.client import Yahoo_Client 
+from module.yahoo_finance.client import Yahoo_Client 
 from instrument import create_folder, business_date
 from risk_free_rate import Risk_Free_Rate
 from volatility_surface import Volatility_Surface
@@ -82,6 +82,7 @@ if args.source == 'yahoo':
 if args.action == 'volatility_surface':
 	options = client.fetch_options()
 	spot_price = client.fetch_current_price()
+	
 	ir_client = Yahoo_Client("SR1=F", start_date, end_date)
 	risk_free_rate =  Risk_Free_Rate.SOFR(ir_client.fetch_current_price())
 	dividend = client.fetch_dividend_yield()
