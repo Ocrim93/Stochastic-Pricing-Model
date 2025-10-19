@@ -35,15 +35,15 @@ Prototype to fetch and compute:
  
  Install dependency
   ```
-   sh install.sh
+   ./install.sh
  ```
  Run the Protype
  ```
-  python -m Prototype \
+  python -m prototype \
     --ticker  "AAPL" \
     --action "price" \
-    --start "01Jan2008" \
-    --end "01Jan2009" \
+    --start "01/01/2008" \
+    --end "01/01/2009" \
     --source "yahoo"  \
     --output "./" \
     --save True \

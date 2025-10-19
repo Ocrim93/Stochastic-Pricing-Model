@@ -1,4 +1,5 @@
-from measure import Measure
+from prototype.measure import Measure
+from prototype.ticker import Ticker
 
 class Measure_map:
 
@@ -29,6 +30,11 @@ class Measure_map:
 	info = {
 			'dividendYield' : Measure.DIVIDEND_YIELD
 			}
+
+def ticker_map():
+	return { Ticker.SPX : '^SPX',
+			 Ticker.SOFR : 'SR1=F'
+			 }
 
 
 def map_to_formating(key : str , measure : str = None):
