@@ -2,10 +2,10 @@ from loguru import logger
 import pandas as pd 
 from typing import Callable
 import pandas as pd
-from measure import Measure
+from .measure import Measure
 from datetime import datetime
-from analytics import Analytics, AnalyticsForward
-from instrument import expiration_in_year
+from .analytics import Analytics, AnalyticsForward
+from .instrument import expiration_in_year
 
 class Volatility_Surface :
 
@@ -20,11 +20,9 @@ class Volatility_Surface :
 		y = payoff_function(start)
 		x = start 
 		while (abs(y-target) > accuracy) or stop < 0 :
-			print('.      ', y, target, x )
 			d = derivative(x)
 			x += (target - y)/d
 			y = payoff_function(x)
-			print(x,y,d)
 			stop -= 1
 		return x
 
@@ -33,7 +31,7 @@ class Volatility_Surface :
 	def __init__(self,
 				 ticker : str,
 				 data : dict, 
-				 start_date : str,
+				 business_date : str,
 				 spot_price : float,
 				 risk_free_rate : float = 0.,
 				 dividend_yield : float = 0 ,
@@ -46,7 +44,7 @@ class Volatility_Surface :
 
 		self.ticker = ticker
 		self.data = data
-		self.start_date = start_date
+		self.business_date = business_date
 		self.S = spot_price
 		self.r = risk_free_rate
 		self.q = dividend_yield
@@ -82,10 +80,9 @@ class Volatility_Surface :
 		logger.info(f'starting computation volatility surface - {call_put} ')
 		datum = self.data[call_put]
 		volatility_surface = {}
-		
 		for t_exp in datum.keys():
 			logger.info(f'time to expiration {t_exp} - {call_put}')
-			time_to_expiration = expiration_in_year(self.start_date,t_exp,convention='actual')
+			time_to_expiration = expiration_in_year(self.business_date,t_exp,convention='actual')
 			volatility_surface[t_exp] = self.compute_IV_per_strike(datum[t_exp],time_to_expiration,c_p )
 		
 		return volatility_surface

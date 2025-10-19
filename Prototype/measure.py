@@ -1,4 +1,4 @@
-class Measure():
+class Measure:
 
 	STRIKE = 'STRIKE'
 	BID = 'BID'

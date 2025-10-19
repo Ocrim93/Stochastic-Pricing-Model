@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Union
 
+
 LIST_SYMBOL = ['F','G','H','J','K','M','N','Q','U','V','X','Z']
 
 def get_map_month_symbol(reverse = False ):
@@ -17,21 +18,11 @@ def create_folder(path : str):
 		logger.info(f'creation folder {path}')
 		os.makedirs(path)
 
-def business_date(date : datetime = datetime.now()):
-	#check if Saturday
-	if date.strftime("%w") == '6':
-		shift = timedelta(days = 1)
-	#check if Sunday
-	if date.strftime("%w") == '0':
-		shift = timedelta(days = 2)
-	cob = date - shift
-	return datetime(cob.year,cob.month,cob.day)
-
 def expiration_in_year(date1 : datetime,
 					   date2 : datetime,
-					   formatting :str = '%d-%m-%Y',
+					   formatting :str = '%d/%m/%Y',
 					   convention : str = 'trading_days' ) -> float :
-	
+	print(date1, date2)
 	date1 = datetime.strptime(date1, formatting)
 	date2 = datetime.strptime(date2, formatting)
 	days = (date2 - date1).days
@@ -47,3 +38,6 @@ def chang_date_formatting(cob : Union[datetime,str] , formatting_from :str , for
 		cob = datetime.strptime(cob,formatting_from)
 	cob = cob.strftime(formatting_to)
 	return cob
+
+
+
