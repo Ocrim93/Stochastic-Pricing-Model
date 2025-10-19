@@ -19,7 +19,7 @@ keywords = ["packaging", "poetry"]
 
 [tool.poetry.dependencies]
 # Compatible Python versions
-python = ">=3.9"
+python="^3.10"
 # Standard dependency with semver constraints
 aiohttp = "^3.8.1"
 # Dependency with extras
@@ -36,6 +36,9 @@ pandas = "^2.3.1"
 numpy = "^1"
 yfinance = "^0.2.65"
 scipy = "^1"
+jupyter = "^1.1.1"
+ipykernel = "^7.0.1"
+loguru = "^0.7.3"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
 pytest-cov = "^3.0"

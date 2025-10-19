@@ -4,7 +4,7 @@ from typing import Callable
 import pandas as pd
 from measure import Measure
 from datetime import datetime
-from analytics import Analytics 
+from analytics import Analytics, AnalyticsForward
 from instrument import expiration_in_year
 
 class Volatility_Surface :
@@ -20,9 +20,11 @@ class Volatility_Surface :
 		y = payoff_function(start)
 		x = start 
 		while (abs(y-target) > accuracy) or stop < 0 :
+			print('.      ', y, target, x )
 			d = derivative(x)
 			x += (target - y)/d
 			y = payoff_function(x)
+			print(x,y,d)
 			stop -= 1
 		return x
 
@@ -34,7 +36,8 @@ class Volatility_Surface :
 				 start_date : str,
 				 spot_price : float,
 				 risk_free_rate : float = 0.,
-				 dividend_yield : float = 0
+				 dividend_yield : float = 0 ,
+				 forward_flag : bool = False 
 				 ):	
 		"""
 			data : {'call' : {'t_ex' : DataFrame },
@@ -48,6 +51,8 @@ class Volatility_Surface :
 		self.r = risk_free_rate
 		self.q = dividend_yield
 		self.volatility_surface = {'call' : None, 'put' : None}
+		self.analytics = AnalyticsForward if forward_flag else Analytics
+
 
 	def compute_IV_per_strike(self,data : pd.DataFrame,
 								  time_to_expiration : float,
@@ -62,11 +67,11 @@ class Volatility_Surface :
 			target = row.LAST_PRICE
 			#call
 			if c_p ==0 :
-				payoff = lambda vol :   Analytics.BSCall(self.S,strike,vol,self.r,self.q,time_to_expiration)
+				payoff = lambda vol :   self.analytics.BSCall(self.S,strike,vol,self.r,time_to_expiration,self.q)
 			#put
 			if c_p ==1 :
-				payoff = lambda vol :  Analytics.BSPut(self.S,strike,vol,self.r,self.q,time_to_expiration)
-			vega = lambda  vol  :   Analytics.BSVega(self.S,strike,vol,self.r,self.q,time_to_expiration)
+				payoff = lambda vol :  self.analytics.BSPut(self.S,strike,vol,self.r,time_to_expiration, self.q)
+			vega = lambda  vol  :   Analytics.BSVega(self.S,strike,vol,self.r,time_to_expiration,self.q)
 			IV = Volatility_Surface.NewtonRaphson(target,start, payoff, vega, 1e-3 )
 			IVs[strike] = { Measure.IV :  IV, Measure.LAST_PRICE : target, Measure.SOURCE_IMPLIED_VOLATILITY : impl_vol_source }
 
