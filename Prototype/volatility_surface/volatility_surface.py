@@ -2,7 +2,7 @@ from loguru import logger
 import pandas as pd 
 from typing import Callable
 import pandas as pd
-from .measure import Measure
+from prototype.measure import Measure
 from datetime import datetime
 from .analytics import Analytics, AnalyticsForward
 from .instrument import expiration_in_year

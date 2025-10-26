@@ -6,10 +6,10 @@ from datetime import datetime
 import pandas as pd 
 from loguru import logger 
 import yfinance as yf
-from .instrument import formatting_data, formatting_ticker, business_date
+from .instrument import formatting_data, _ticker
 from .yahoo_measure import map_to_formating,map_from_formatting
 from prototype.measure import Measure
-from prototype.instrument import chang_date_formatting
+from prototype.instrument import change_date_formatting
 from prototype.source.client_base import Client 
 
 class Yahoo_Client(Client):
@@ -17,20 +17,23 @@ class Yahoo_Client(Client):
 				 ticker : str,
 				 start_date : datetime,
 				 end_date : datetime,
-				 period : str = ""):
+				 frequency : str = '1d'
+				 ):
 		
 		self.ticker = ticker
-		self.start_date = business_date(start_date)
-		self.end_date = business_date(end_date) if start_date !=end_date else None
-		self.period = period
+		self.start_date = start_date
+		self.end_date = end_date if start_date !=end_date else None
+		self.frequency = frequency
 		logger.info(f'creating Yahoo Client')
-		self.client = yf.Ticker(formatting_ticker(ticker))
+		try:
+			self.client = yf.Ticker(_ticker(ticker))
+		except Exception as e:
+			logger.error(f'client error occured, {e}')
 
 	def fetch(self) -> pd.DataFrame:
-		logger.info(f"starting fetch {self.ticker} prices")
-		if self.period == "":
-			df = self.client.history(start = self.start_date, end=self.end_date)
-		df = self.client.history(start = self.start_date, end=self.end_date)
+		logger.info(f"starting fetch {self.ticker} prices, frequency {self.frequency}")
+		df = self.client.history(start = self.start_date, end=self.end_date , interval = self.frequency)
+		df.to_csv('ciccio.csv')
 		if df.empty:
 			logger.warning(f" price {self.ticker} empty dataframe")
 		formatted_df = formatting_data(df,'price')
@@ -51,7 +54,7 @@ class Yahoo_Client(Client):
 		call_put = {}
 		for d in self.client.options:
 			options = self.client.option_chain(d)
-			t_exp = chang_date_formatting(d, "%Y-%m-%d", "%d/%m/%Y")
+			t_exp = change_date_formatting(d, "%Y-%m-%d", "%d/%m/%Y")
 			call_put['call'] = {t_exp :  formatting_data(options.calls, 'volatility_surface')}
 			call_put['put'] = { t_exp :  formatting_data(options.puts,'volatility_surface')}
 		

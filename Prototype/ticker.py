@@ -10,6 +10,11 @@ class Ticker:
 	HSI = 'HSI' # Hang Seng Index (Hong Kong)
 
 	'''
+		Equity
+	'''
+	AAPL ='AAPL'
+
+	'''
 		IR 
 	'''
 	SOFR = 'SOFR'

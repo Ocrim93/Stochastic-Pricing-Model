@@ -42,11 +42,22 @@ Prototype to fetch and compute:
   python -m prototype \
     --ticker  "AAPL" \
     --action "price" \
-    --start "01/01/2008" \
-    --end "01/01/2009" \
+    --start_date "01/01/2008" \
+    --end_date "01/01/2009" \
+    --frequency "B"
     --source "yahoo"  \
     --output "./" \
     --save True \
 ```
+### Frequency conventions
 
-
+| Symbol |  Description           |
+|:-----  |:----------------------:|
+| B      | Business date          |
+| W      | Weekly                 |
+| BME    | Business month end     |
+| BMS    | business month start   |
+| BQE    | business quarter end   |
+| BQS    | business quarter start |
+| BYE    | business year end      |
+| BYS    | business year start    |
