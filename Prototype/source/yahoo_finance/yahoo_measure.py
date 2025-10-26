@@ -1,5 +1,6 @@
 from prototype.measure import Measure
 from prototype.ticker import Ticker
+from collections import defaultdict
 
 class Measure_map:
 
@@ -31,11 +32,6 @@ class Measure_map:
 			'dividendYield' : Measure.DIVIDEND_YIELD
 			}
 
-def ticker_map():
-	return { Ticker.SPX : '^SPX',
-			 Ticker.SOFR : 'SR1=F'
-			 }
-
 
 def map_to_formating(key : str , measure : str = None):
 	if measure != None:
@@ -46,3 +42,10 @@ def map_from_formatting(key : str, measure :str = None ):
 	if measure != None:
 		return { v : k for k,v in map_to_formating(key).items() }[measure]
 	return  { v : k for k,v in map_to_formating(key).items() }
+
+def ticker_map(ticker):
+	t = defaultdict(lambda : ticker) 
+	t[Ticker.SPX] = '^SPX'
+	t[Ticker.SOFR] = 'SR1=F'
+	return t[ticker]
+			 

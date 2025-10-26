@@ -7,3 +7,11 @@ class Client(ABC):
 	@abstractmethod
 	def fetch(self):
 		pass
+
+	@abstractmethod
+	def fetch_options(self):
+		pass
+
+	@abstractmethod
+	def fetch_current_price(self):
+		pass
