@@ -1,20 +1,30 @@
+import pandas as pd 
+from loguru import logger 
+
 class Ticker:
-	'''
-		Equity Index
-	'''
 
-	SPX = 'SPX' # S&P 500
-	DJI = 'DJI' #Dow Jones Industrial average
-	FTSE100 = 'FTSE100'
-	SX5E = 'SX5E'
-	HSI = 'HSI' # Hang Seng Index (Hong Kong)
+	__cache = {}
+	_loaded  = False
 
-	'''
-		Equity
-	'''
-	AAPL ='AAPL'
+	def __init__(self, io : str, key : str ):
+		self.io = io
+		self.key = key
+		data = self.load_or_get_cache()
+		for k,_ in data.items():
+			setattr(self.__class__, k,k)
+		self.__class__._loaded  = True
 
-	'''
-		IR 
-	'''
-	SOFR = 'SOFR'
+	def load_or_get_cache(self):
+		if self.key in self.__class__.__cache:
+			return __cache[self.key]
+		else:
+			df = pd.read_csv(self.io)	
+			n = len(df)
+			
+			logger.info(f'loading {self.key}, n. {n}')
+			
+			df_dict = df.to_dict()
+			self.__class__.__cache[self.key] = { df_dict['Ticker'][i] : df_dict['Description'][i]   for i in range(n) }
+
+			return self.__class__.__cache[self.key]
+
