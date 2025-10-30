@@ -1,7 +1,5 @@
 from  .yahoo_measure import map_to_formating, ticker_map
 import pandas as pd
-import os 
-from datetime import datetime, timedelta
 from prototype.measure import Measure
 
 
@@ -16,5 +14,5 @@ def formatting_data(data : pd.DataFrame, key : str,  column_set : list = []  ):
 	df[Measure.DATE] = pd.to_datetime(df[Measure.DATE])
 	return df
 
-def _ticker(ticker : str):
+def get_ticker(ticker : str):
 	return ticker_map(ticker)

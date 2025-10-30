@@ -1,22 +1,28 @@
+import pandas as pd 
+from loguru import logger 
+
 class Measure:
 
-	STRIKE = 'STRIKE'
-	BID = 'BID'
-	ASK = 'ASK'
-	CLOSE = 'CLOSE'
-	HIGH = 'HIGH'
-	LOW = 'LOW'
-	OPEN = 'OPEN'
-	LAST_PRICE = 'LAST_PRICE'
-	CURRENCY = 'CURRENCY'
-	VOLUME= 'VOLUME'
-	OPEN_INTEREST = 'OPEN_INTEREST'
-	CONTRACT_SIZE = 'CONTRACT_SIZE'
-	DIVIDEND_YIELD = 'DIVIDEND_YIELD'
-	DATE = 'DATE'
-	SOURCE_IMPLIED_VOLATILITY = 'SOURCE_IMPLIED_VOLATILITY'
-	DIVIDENDS = 'DIVIDENDS'
-	TIME_TO_MATURITY = 'TIME_TO_MATURITY'
-	IV = 'IV'
+	__cache = {}
+	_loaded = False
 
-	PCT_CHANGE = 'PCT_CHANGE (%)'
+	def __init__(self, io : str, key : str = 'Measure' ):
+		self.io = io
+		self.key = key
+		data = self.load_or_get_cache()
+		for k,v in data.items():
+			setattr(self.__class__, k,v) 
+		self.__class__._loaded = True
+
+	def load_or_get_cache(self):
+		if self.key in self.__class__.__cache:
+			return __cache[self.key]
+		else:
+			df = pd.read_csv(self.io)	
+			n = len(df)
+			
+			logger.info(f'loading {self.key}, n. {n}')
+			
+			df_dict = df.to_dict()
+			self.__class__.__cache[self.key] = { df_dict['Measure_key'][i] : df_dict['Measure_value'][i]   for i in range(n) }
+			return self.__class__.__cache[self.key]

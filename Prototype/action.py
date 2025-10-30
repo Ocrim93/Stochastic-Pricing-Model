@@ -29,8 +29,8 @@ class Action():
 		client = self.get_client()
 		data = client.fetch()
 
+		data = cleaning_data(data,columns = [M.CLOSE], freq = self.args['frequency'])
 		data[M.PCT_CHANGE] = data[M.CLOSE].pct_change()*100
-		data = cleaning_data(data,columns = [M.CLOSE, M.PCT_CHANGE], freq = self.args['frequency'])
 		
 		fig_title = self.filename
 		price_fig = create_figure(data,f"{fig_title}_{M.CLOSE}",  M.DATE, M.CLOSE) 
@@ -48,7 +48,6 @@ class Action():
 		
 		if self.args['save'] : 
 			self.save_data(data)
-
 
 	def portfolio(self):
 		pass
@@ -72,7 +71,6 @@ class Action():
 					 			  risk_free_rate,
 					 			  dividend)
 		vol.run()
-
 
 	def save_data(self, data : pd.DataFrame,):
 		if data.empty:

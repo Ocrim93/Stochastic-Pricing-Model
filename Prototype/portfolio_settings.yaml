@@ -1,6 +1,6 @@
 budget: 20000
 budget_per_frequency:
-frequency: "M"
+frequency: "BME"
 start_date: "01/01/2010"
 end_date:  "01/01/2020"
   
@@ -8,7 +8,3 @@ asset:
   - name: "SPX"
     source: "yahoo"
     
-    
-    
-  
-

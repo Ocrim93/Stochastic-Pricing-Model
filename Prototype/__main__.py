@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from .instrument import formatting_input
+from .instrument import formatting_input,populate_attributes
 from .action import Action
 
 parser = ArgumentParser()
@@ -79,5 +79,12 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+populate_attributes()
 action = Action(formatting_input(args))
+
+
+
+
+
+
 

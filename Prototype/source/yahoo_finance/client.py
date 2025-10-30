@@ -6,7 +6,7 @@ from datetime import datetime
 import pandas as pd 
 from loguru import logger 
 import yfinance as yf
-from .instrument import formatting_data, _ticker
+from .instrument import formatting_data, get_ticker
 from .yahoo_measure import map_to_formating,map_from_formatting
 from prototype.measure import Measure
 from prototype.instrument import change_date_formatting
@@ -26,14 +26,13 @@ class Yahoo_Client(Client):
 		self.frequency = frequency
 		logger.info(f'creating Yahoo Client')
 		try:
-			self.client = yf.Ticker(_ticker(ticker))
+			self.client = yf.Ticker(get_ticker(ticker))
 		except Exception as e:
 			logger.error(f'client error occured, {e}')
 
 	def fetch(self) -> pd.DataFrame:
 		logger.info(f"starting fetch {self.ticker} prices, frequency {self.frequency}")
 		df = self.client.history(start = self.start_date, end=self.end_date , interval = self.frequency)
-		df.to_csv('ciccio.csv')
 		if df.empty:
 			logger.warning(f" price {self.ticker} empty dataframe")
 		formatted_df = formatting_data(df,'price')
