@@ -2,6 +2,7 @@
 	***Yahoo source does not support historical option prices***
 """
 
+import sys
 from datetime import datetime
 import pandas as pd 
 from loguru import logger 
@@ -17,25 +18,29 @@ class Yahoo_Client(Client):
 				 ticker : str,
 				 start_date : datetime,
 				 end_date : datetime,
-				 frequency : str = '1d'
+				 period : str = '1d',
+				 FX_flag : bool = False
 				 ):
 		
 		self.ticker = ticker
 		self.start_date = start_date
 		self.end_date = end_date if start_date !=end_date else None
-		self.frequency = frequency
+		self.period = period
 		logger.info(f'creating Yahoo Client')
+		yahoo_ticker = get_ticker(ticker,FX_flag)
 		try:
-			self.client = yf.Ticker(get_ticker(ticker))
+			self.client = yf.Ticker(yahoo_ticker)
 		except Exception as e:
 			logger.error(f'client error occured, {e}')
+			sys.exit(f'{e} - {yahoo_ticker}')
 
-	def fetch(self) -> pd.DataFrame:
-		logger.info(f"starting fetch {self.ticker} prices, frequency {self.frequency}")
-		df = self.client.history(start = self.start_date, end=self.end_date , interval = self.frequency)
+	def fetch_price(self) -> pd.DataFrame:
+		logger.info(f"fetch {self.ticker} prices, period {self.period}")
+		df = self.client.history(start = self.start_date, end=self.end_date , interval = self.period)
 		if df.empty:
 			logger.warning(f" price {self.ticker} empty dataframe")
 		formatted_df = formatting_data(df,'price')
+		logger.info(f'yahoo retrieved {self.ticker} {len(formatted_df)} records')
 		return formatted_df
 
 	def fetch_financials(self) -> pd.DataFrame:
@@ -59,6 +64,12 @@ class Yahoo_Client(Client):
 		
 		return call_put
 
+	def fetch_balancesheet(self):
+		return self.client.balancesheet
+
+	def fetch_cashflow(self):
+		return self.client.cash_flow
+
 	def fetch_current_price(self):
 		df = self.fetch()
 		df = df.sort_values(by = Measure.DATE, ascending = True)
@@ -66,10 +77,16 @@ class Yahoo_Client(Client):
 		logger.info(f' current closing price {self.ticker}: {closing_price} {self.start_date}')
 		return closing_price
 
+	def fetch_currency(self) -> str :
+		currency = self.client.info[map_from_formatting('info',Measure.CURRENCY)]
+		logger.info(f'fetch {self.ticker} currency {currency}')
+		return currency
+
 	def fetch_dividend_yield(self) -> float:
 		try :
-			logger.info(f'fetching {self.ticker} dividend yield')
-			return self.client.info[map_from_formatting('info',Measure.DIVIDEND_YIELD)]
+			dividend = self.client.info[map_from_formatting('info',Measure.DIVIDEND_YIELD)]
+			logger.info(f'fetch {self.ticker} dividend yield {dividend}')
+			return dividend
 		except :
 			logger.warning(f'{self.ticker} dividendYield not found')
 			return 0
