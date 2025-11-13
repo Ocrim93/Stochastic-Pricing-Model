@@ -6,7 +6,11 @@ from loguru import logger
 
 class Measure_map:
 
-	def volatility_surface():
+	def __init__(self):
+		pass
+
+	@property
+	def volatility_surface(self):
 		  return {
 				'strike' : Measure.STRIKE ,
 				'impliedVolatility' : Measure.SOURCE_IMPLIED_VOLATILITY ,
@@ -20,7 +24,8 @@ class Measure_map:
 				'lastTradeDate' : Measure.DATE
 			}
 
-	def price():
+	@property
+	def price(self):
 		return  {
 				'Date' : Measure.DATE,
 				'Open' : Measure.OPEN,
@@ -31,9 +36,11 @@ class Measure_map:
 				'Dividends' : Measure.DIVIDENDS
 			}
 
-	def info():
+	@property
+	def info(self):
 		return  {
-				'dividendYield' : Measure.DIVIDEND_YIELD
+				'dividendYield' : Measure.DIVIDEND_YIELD,
+				'currency' : Measure.CURRENCY
 				}
 
 class Yahoo_Ticker:
@@ -60,8 +67,8 @@ class Yahoo_Ticker:
 
 def map_to_formating(key : str , measure : str = None):
 	if measure != None:
-		return getattr(Measure_map,key)()[measure]
-	return  getattr(Measure_map,key)()
+		return getattr(Measure_map(),key)[measure]
+	return  getattr(Measure_map(),key)
 
 def map_from_formatting(key : str, measure :str = None ):
 	if measure != None:

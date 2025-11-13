@@ -24,7 +24,7 @@ class Ticker:
 			logger.info(f'loading {self.key}, n. {n}')
 			
 			df_dict = df.to_dict()
-			self.__class__.__cache[self.key] = { df_dict['Ticker'][i] : df_dict['Description'][i]   for i in range(n) }
+			self.__class__.__cache[self.key] = { df_dict['Ticker'][i] : df_dict['Currency'][i]   for i in range(n) }
 
 			return self.__class__.__cache[self.key]
 

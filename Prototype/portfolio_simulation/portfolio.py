@@ -1,12 +1,10 @@
 import yaml
 import pandas as pd
-from .instrument import fetch_client
 from prototype.measure import Measure as column
 
 class Portfolio:
-	def __init__(self):
-		with open("prototype/portfolio_settings.yaml", "r") as file:
-			data = yaml.safe_load(file)
+	def __init__(self, config_io: str):
+
 		self.__dict__.update(data)
 		self.data = pd.DataFrame()
 

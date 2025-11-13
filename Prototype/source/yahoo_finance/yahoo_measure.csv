@@ -1,4 +1,5 @@
 ,Ticker,Yahoo_Ticker
 0,SPX,^SPX
 1,SOFR,SR1=F
+2,SX5E,^STOXX50E
 

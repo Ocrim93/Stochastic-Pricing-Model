@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from .instrument import formatting_input,populate_attributes
+from .instrument import formatting_input,retrieve_ticker_from_csv
 from .action import Action
 
 parser = ArgumentParser()
@@ -36,12 +36,20 @@ parser.add_argument(
 	)
 
 parser.add_argument(
+	"--currency",
+	required = False,
+	default = "USD",
+	action="store",
+	help = "FX reporting currency "
+	)
+
+parser.add_argument(
 	"-f",
 	"--frequency",
 	required = False,
 	default = "B",
 	action="store",
-	help = "Frequency"
+	help = "time frequency of retrieving data "
 	)
 
 parser.add_argument(
@@ -79,7 +87,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-populate_attributes()
+retrieve_ticker_from_csv()
 action = Action(formatting_input(args))
 
 
