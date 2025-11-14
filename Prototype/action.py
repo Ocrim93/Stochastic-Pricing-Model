@@ -1,8 +1,8 @@
 from loguru import logger
 import pandas as pd
 import numpy as np
-from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset
-from .plot_lib import create_figure
+from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot
+from .plot_lib import create_figure, create_candlestick, adding_line
 from .measure import Measure as M
 from .source.yahoo_finance.client import Yahoo_Client
 from plotly.offline import  iplot
@@ -34,32 +34,30 @@ class Action():
 
 	def price(self):
 		client = self._client()
-		data = client.fetch_price()[[M.DATE,M.CLOSE]]
+		data = client.fetch_price()
 		currency = client.fetch_currency()
-		
-		if currency == self.args['currency']:
-			fx_df = build_business_dates_dataset(self.args['start_date'],self.args['end_date'])
-			fx_df[M.FX_SPOT] = np.full(len(fx_df),1)
-		else:
-			fx_df = Action.get_client(f"{self.args['currency']}{currency}",
+		if currency != self.args['currency']:
+			fx_df = Action.get_client(f"{currency}{self.args['currency']}",
 										self.args['start_date'],
 										self.args['end_date'],
 										self.args['source'],
-										FX_flag = True).fetch_price()[[M.DATE,M.CLOSE]]
-			fx_df = fx_df.rename(columns = {M.CLOSE:M.FX_SPOT})
+										FX_flag = True).fetch_price()
 
 		logger.info(f'start cleaning data for {self.args["ticker"]}')
-		data = cleaning_data(data,columns = [M.CLOSE], frequency = self.args['frequency'])
-		logger.info(f'start cleaning data for FX_SPOT')
-		fx_df = cleaning_data(fx_df,columns = [M.FX_SPOT], frequency = self.args['frequency'])
+		data = cleaning_data(data,columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH], frequency = self.args['frequency'])
+		
+		if currency != self.args['currency']:
+			logger.info(f'start cleaning data for FX_SPOT')
+			fx_df = cleaning_data(fx_df,columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH], frequency = self.args['frequency'])
+			
+			data = applying_fx_spot(data, fx_df)
 
-		data = data.merge(fx_df, how = 'inner', on = M.DATE)
-		data[M.CLOSE_FX] = data[M.CLOSE]*data[M.FX_SPOT]
-
-		data[M.PCT_CHANGE] = data[M.CLOSE_FX].pct_change(fill_method=None)*100
+		data[M.PCT_CHANGE] = data[M.CLOSE].pct_change(fill_method=None)*100
+		
 		fig_title = ' '.join(self.filename.split('_'))
-		price_fig = create_figure(data,f"{fig_title} {M.CLOSE} ({self.args['currency']})",  M.DATE, M.CLOSE) 
-		pct_fig = create_figure(data,f"{fig_title} {M.PCT_CHANGE}",  M.DATE,M.PCT_CHANGE,) 
+		price_fig = create_candlestick(data,f"{fig_title}",  M.DATE, M.CLOSE)
+		price_fig = adding_line(price_fig, data, M.CLOSE, M.DATE,M.CLOSE)
+		pct_fig = create_figure(data,f"{fig_title}",  M.DATE,M.PCT_CHANGE,) 
 		
 		if self.args['save']: 
 			self.save_data(data)

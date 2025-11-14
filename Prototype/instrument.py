@@ -51,6 +51,17 @@ def business_date(date : str):
 	cob = date - shift
 	return datetime(cob.year,cob.month,cob.day).astimezone(ZoneInfo(TIME_ZONE))
 
+def applying_fx_spot(ticker_df, fx_df):
+	logger.info('applying fx spot')
+
+	columns = [M.LOW,M.HIGH,M.OPEN,M.CLOSE]
+	merging_data = ticker_df.merge(fx_df, how = 'inner', on = M.DATE, suffixes = ('_TICKER','_FX'))
+	for col in columns:
+		merging_data[col] = merging_data[f'{col}_TICKER']*merging_data[f'{col}_FX']
+
+	logger.info(f'number of rows after fx splot {len(merging_data)}')
+	return merging_data[[M.DATE]+columns]
+
 def build_business_dates_dataset(start_date, end_date, freq = 'B') :
 	date_range = pd.date_range(start=start_date, end=end_date, freq = freq, tz = ZoneInfo(TIME_ZONE))
 	date_range_df = pd.DataFrame(data = { M.DATE : date_range})
