@@ -1,9 +1,10 @@
-from plotly.graph_objs import Figure, Scatter
+from plotly.graph_objs import Figure, Scatter, Candlestick
 import plotly.io as pio 
 import random
 from typing import Union
-import plotly.graph_objects as go
 import plotly.express as px
+from .measure import Measure as M
+
 
 colors = ['#1F77B4']
 
@@ -35,20 +36,34 @@ def setting_layout(figure,title,x_axis,y_axis):
 		    legend_title_font_color=GRAPH.legend_title_font_color,
 		    title=dict(text=title , font=dict(size=GRAPH.title_font_size), yref='paper'),
 		    xaxis_title=x_axis ,
+		    xaxis=dict(type='category'),
     		yaxis_title=y_axis
     )
 
 	return figure
 
-def create_figure(	data, 
-				    title,
-				    x_axis,
-				    y_axis):
+def create_figure( data, 
+				   title,
+				   x_axis,
+				   y_axis):
 	
 	figure = Figure(Scatter(x=data[x_axis], y=data[y_axis],mode='lines', line = {'color' : generator_colour()}))
 	figure = setting_layout(figure,title,x_axis,y_axis )
 	
 	return figure	
+
+def create_candlestick( data, 
+				    	title,
+				        x_axis,
+				        y_axis):
+
+	figure = Figure(data=[Candlestick( x=data[M.DATE],
+							           open=data[M.OPEN],
+							           high=data[M.HIGH],
+							           low=data[M.LOW],
+							           close=data[M.CLOSE])])
+	figure = setting_layout(figure,title,x_axis,y_axis )
+	return figure
 
 def create_multiple_axes_figure(data, 
 							    title,
