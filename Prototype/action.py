@@ -72,10 +72,10 @@ class Action():
 
 	def price(self):
 		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
-		self.filename = f"{self.args['ticker']}_({self.args['currency']})_ \
-						 {self.args['start_date'].date()}_\
-						 {self.args['end_date'].date()}_\
-						 {self.args['frequency']}_{args['source']}"
+		self.filename = f"{self.args['ticker']}_({self.args['currency']})_"+\
+						f"{self.args['start_date'].date()}_"+\
+						f"{self.args['end_date'].date()}_"+\
+						f"{self.args['frequency']}_{self.args['source']}"
 
 		data = self._price(columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH,M.VOLUME])
 		
@@ -95,7 +95,7 @@ class Action():
 
 	def financials(self):
 		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
-		self.filename = f"{args['ticker']}_{args['source']}"
+		self.filename = f"{self.args['ticker']}_{self.args['source']}"
 
 		client = self._client()
 		data = client.fetch_financials()
