@@ -3,7 +3,7 @@ import pandas as pd
 from prototype.measure import Measure
 
 
-def formatting_data(data : pd.DataFrame, key : str,  column_set : list = []  ):
+def formatting_data(data : pd.DataFrame, key : str,  column_set : list = [] ):
 	df = data.reset_index()
 	column_map = map_to_formating(key)
 	

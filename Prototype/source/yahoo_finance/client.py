@@ -21,7 +21,6 @@ class Yahoo_Client(Client):
 				 period : str = '1d',
 				 FX_flag : bool = False
 				 ):
-		
 		self.ticker = ticker
 		self.start_date = start_date
 		self.end_date = end_date if start_date !=end_date else None

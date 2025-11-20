@@ -4,10 +4,10 @@
 
 class Risk_Free_Rate():
 
-	ir_map = {'USD' : ['SOFR']}
+	arr_map = {'USD' : 'SOFR'}
 
 	def __init__(self, ARR : str = '', currency : str = '' ):
-		self.ARR = ir_map[]
+		self.ARR = arr_map[]
 		
 		
 	@staticmethod

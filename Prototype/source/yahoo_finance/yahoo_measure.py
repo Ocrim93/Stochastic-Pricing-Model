@@ -44,8 +44,8 @@ class Measure_map:
 				}
 
 class Yahoo_Ticker:
-	__cache = {}
 	__io = 'prototype/source/yahoo_finance/yahoo_measure.csv'
+	__cache = {}
 
 	def __init__(self):
 		pass
@@ -63,7 +63,8 @@ class Yahoo_Ticker:
 
 			return cls.__cache
 		else:
-			return __cache
+			return cls.__cache
+
 
 def map_to_formating(key : str , measure : str = None):
 	if measure != None:
