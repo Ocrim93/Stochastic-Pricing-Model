@@ -51,16 +51,42 @@ def business_date(date : str):
 	cob = date - shift
 	return datetime(cob.year,cob.month,cob.day).astimezone(ZoneInfo(TIME_ZONE))
 
-def applying_fx_spot(ticker_df, fx_df):
+def time_convention(convetion : str, frequency : str):
+	if convetion == 'actual':
+		if frequency == 'B':
+			return 1/365
+		if frequency == 'BME':
+			return 30/365
+	if convetion == 'trading':
+		if frequency == 'B':
+			return 1/252
+		if frequency == 'BME':
+			return 21/252
+
+def datetime_to_timestamp( dt : datetime):
+	ts_int = int(datetime(dt.year, dt.month, dt.day).timestamp())*1e3
+	return ts_int
+
+def compute_pct_change(dataset: pd.DataFrame, column : str, frequency : str ):
+	time_factor = np.sqrt(time_convention('trading', frequency))
+	time_factor = 1
+	logger.info(f'computing {M.PCT_CHANGE} and {M.LOG_PCT}')
+	dataset[M.PCT_CHANGE] = dataset[column].pct_change(fill_method=None)*100
+	logger.info(f'{M.PCT_CHANGE} mean : {dataset[M.PCT_CHANGE].mean():.3f} : std {dataset[M.PCT_CHANGE].std(ddof = 1)/time_factor:.3f}')
+	dataset[M.LOG_PCT] = np.log(dataset[column].shift(periods=-1)/dataset[column])*100
+	logger.info(f'{M.LOG_PCT} mean : {dataset[M.LOG_PCT].mean():.3f} : std {dataset[M.LOG_PCT].std(ddof = 1)/time_factor:.3f}')
+
+
+def applying_fx_spot(ticker_df : pd.DataFrame, fx_df : pd.DataFrame, columns : list):
 	logger.info('applying fx spot')
 
-	columns = [M.LOW,M.HIGH,M.OPEN,M.CLOSE]
 	merging_data = ticker_df.merge(fx_df, how = 'inner', on = M.DATE, suffixes = ('_TICKER','_FX'))
 	for col in columns:
 		merging_data[col] = merging_data[f'{col}_TICKER']*merging_data[f'{col}_FX']
 
 	logger.info(f'number of rows after fx splot {len(merging_data)}')
-	return merging_data[[M.DATE]+columns]
+	merging_data = merging_data.drop(columns = [col for col in merging_data.columns if ('_TICKER' in col or '_FX' in col)], axis =1)
+	return merging_data
 
 def build_business_dates_dataset(start_date, end_date, freq = 'B') :
 	date_range = pd.date_range(start=start_date, end=end_date, freq = freq, tz = ZoneInfo(TIME_ZONE))
@@ -88,8 +114,9 @@ def check_missing_dates(dataset : pd.DataFrame, freq : str):
 	merged['freq_date'] = np.where(merged[M.DATE].isin(date_range_df[M.DATE].to_list()),True,False)
 	return merged
 
-def cleaning_data(data: pd.DataFrame, columns: list = [], frequency = 'B'):
+def cleaning_data(data: pd.DataFrame, columns: list = [], drop_columns : list =[], frequency = 'B'):
 	df = data.copy()
+	df = df.drop(columns = drop_columns, axis = 1)
 	df = check_missing_dates(df, frequency)
 	for col in columns:
 		if sum(df[col].isna()) > 0:
@@ -100,6 +127,4 @@ def cleaning_data(data: pd.DataFrame, columns: list = [], frequency = 'B'):
 	
 	logger.info(f'cleaning completed, n. records: {len(df)}')
 	return df
-
-
 

@@ -70,6 +70,14 @@ parser.add_argument(
 	)
 
 parser.add_argument(
+	"--portfolio_io",
+	required = False,
+	action="store",
+	default = './prototype/portfolio_settings.yaml',
+	help = "output folder path"
+	)
+
+parser.add_argument(
 	"--save",
 	required = False,
 	action="store_true",
