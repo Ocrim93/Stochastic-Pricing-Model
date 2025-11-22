@@ -26,10 +26,10 @@ Key ingredients:
 ## Prototype
 
 Prototype to fetch and compute:
+ - Portfolio Simulation
  - Volatility surface 
- - price underlying
- - financials info
- - Risk-free rate from SOFR 
+ - Ticker Price 
+ - Ticker Financials Info
  - Yahoo Finance and Barchart sources
  - ... 
  
@@ -46,9 +46,16 @@ Prototype to fetch and compute:
     --end_date "01/01/2009" \
     --frequency "B"
     --source "yahoo"  \
+    --currency "USD" \
     --output "./" \
     --save True \
 ```
+Choice for ```action``` :
+ - price
+ - financials
+ - portfolio
+ - volatility_surface 
+
 ### Frequency conventions
 
 | Symbol |  Description           |
