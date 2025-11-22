@@ -84,8 +84,9 @@ def create_multiple_axes_figure(data,
 	fig.layout['yaxis'] = {'title' : main_y_axis} 
 	for i,y in enumerate(y_axis):
 		if main_y_axis == y : continue
-		fig.add_trace(Scatter( x= data[x_axis], y = data[y], name = y ,yaxis=f'y{i+2}',line = {'color' : generator_colour()} ))
-		fig.layout[f'yaxis{i+2}'] = {'title' : y, 'anchor' : 'free', 'overlaying' : 'y', 'side' : 'right', 'position' :0.02*(i) }
+		#fig.add_trace(Scatter( x= data[x_axis], y = data[y], name = y ,yaxis=f'y{i+2}',line = {'color' : generator_colour()} ))
+		fig.add_trace(Scatter( x= data[x_axis], y = data[y], name = y ,line = {'color' : generator_colour()} ))
+		#fig.layout[f'yaxis{i+2}'] = {'title' : y, 'anchor' : 'free', 'overlaying' : 'y', 'side' : 'right', 'position' :0.02*(i) }
 	fig = setting_layout(fig,title,x_axis,main_y_axis )
 	return fig
 

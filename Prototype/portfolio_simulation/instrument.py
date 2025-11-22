@@ -3,6 +3,8 @@ from prototype.measure import Measure as M
 from loguru import logger
 from  datetime import datetime 
 import numpy as np
+from prototype.instrument import compute_volatility_log_pct,days_in_year
+import math 
 
 def extract_dataset(data_map : dict):
 	data = pd.DataFrame()
@@ -23,6 +25,7 @@ def extract_weight_dataset(weight_map : dict ):
 	return pd.DataFrame(data = { asset_name: [weight] for asset_name, weight in weight_map.items()})
 
 def rebalancing_dates(start_date : datetime, end_date : datetime, frequency : str, data : pd.DataFrame):
+	logger.info(f'rebalancing dates with freq : {frequency}')
 	date_range = pd.bdate_range(start= start_date, end= end_date, freq = frequency)
 	date_range = date_range.map(lambda x : x.date())
 	data[M.REBALANCING_DATE] = np.where(data.index.isin(date_range), True, False)
@@ -53,3 +56,10 @@ def adding_pnl(data : pd.DataFrame, quantity_df : pd.DataFrame):
 	
 	data[M.PnL] = data[M.PnL].fillna(0)
 	data[M.BALANCE] = data[M.BALANCE].fillna(0)
+
+def compute_sharpe_ratio(data : pd.DataFrame, risk_free_rate : float):
+	vol = compute_volatility_log_pct(data.copy(), M.BALANCE, 'B', 'trading')
+
+	rate_of_return = math.pow(data.iloc[-1][M.BALANCE]/data.iloc[-1][M.CASH], len(data)/days_in_year('trading'))
+	return (rate_of_return - risk_free_rate )/vol
+

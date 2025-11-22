@@ -40,7 +40,7 @@ parser.add_argument(
 	required = False,
 	default = "USD",
 	action="store",
-	help = "FX reporting currency "
+	help = "reporting currency "
 	)
 
 parser.add_argument(

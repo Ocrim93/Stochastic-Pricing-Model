@@ -5,7 +5,8 @@ from .plot_lib import create_figure, create_candlestick, adding_line, create_mul
 from .measure import Measure as M
 from .source.yahoo_finance.client import Yahoo_Client
 from plotly.offline import  iplot
-from prototype.portfolio_simulation.portfolio import Portfolio 
+from prototype.portfolio_simulation.portfolio import Portfolio
+from .interest_rate import Risk_Free_Rate 
 import yaml
 
 
@@ -50,6 +51,7 @@ class Action():
 
 	def __init__(self, args : dict ):
 		method = getattr(self,args['action'])
+
 		args['start_date'] = business_date(args['start_date'])
 		args['end_date'] = business_date(args['end_date'])
 		logger.info(f"star_date : {args['start_date'].date()} end_date : {args['end_date'].date()} ")
@@ -108,6 +110,7 @@ class Action():
 			config = yaml.safe_load(file)
 		budget = config['budget'] or 0
 		budget_per_frequency = config['budget_per_frequency'] or 0
+		risk_free_rate_source = config['risk_free_rate_source']
 		frequency = config['frequency'] 
 
 		self.args['frequency'] = 'B'
@@ -124,11 +127,20 @@ class Action():
 			df_map[asset['name']] = self._price([M.CLOSE])
 			weight_map[asset['name']] = asset['weight'] if  asset['weight'] != None else 1/len(config['asset'])
 
+		risk_free_rate = Risk_Free_Rate(self.args['currency'])
+		risk_free_rate_price =  Action.get_price( risk_free_rate.name,
+												  business_date(None),
+												  business_date(None),
+												  risk_free_rate_source,
+												  self.args['currency'],
+												  'B', 
+												  [M.CLOSE] )[M.CLOSE].values[0]
 		portfolio = Portfolio( df_map,
 				   weight_map,
 				   self.args['start_date'],
 				   self.args['end_date'],
 				   frequency,
+				   risk_free_rate.value(risk_free_rate_price),
 				   budget,
 				   budget_per_frequency)
 
