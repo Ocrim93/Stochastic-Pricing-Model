@@ -48,13 +48,17 @@ Prototype to fetch and compute:
     --source "yahoo"  \
     --currency "USD" \
     --output "./" \
-    --save True \
+    --save  \
+    --plot
+
 ```
 Choice for ```action``` :
  - price
  - financials
  - portfolio
  - volatility_surface 
+
+Data and Plot are stored in the output folder.
 
 ### Frequency conventions
 
