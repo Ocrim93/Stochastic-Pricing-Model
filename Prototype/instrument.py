@@ -26,17 +26,17 @@ def retrieve_ticker_from_csv():
 		Ticker(path_file,asset_class)
 	Measure(Measure_io)
 		
-def change_date_formatting(cob : Union[datetime,str] , formatting_from :str , formatting_to : str) -> str:
-	if isinstance(cob, str):
-		cob = datetime.strptime(cob,formatting_from)
-	cob = cob.strftime(formatting_to)
-	return cob
-
 def formatting_input(args) -> dict:
 	args_map = {}
 	for t in args._get_kwargs():
 		args_map[t[0]] = t[1]
 	return args_map
+
+def change_date_formatting(cob : Union[datetime,str] , formatting_from :str , formatting_to : str) -> str:
+	if isinstance(cob, str):
+		cob = datetime.strptime(cob,formatting_from)
+	cob = cob.strftime(formatting_to)
+	return cob
 
 def business_date(date : str):
 	date = datetime.strptime(date, "%d/%m/%Y") if date != None else datetime.now()
@@ -51,31 +51,46 @@ def business_date(date : str):
 	cob = date - shift
 	return datetime(cob.year,cob.month,cob.day).astimezone(ZoneInfo(TIME_ZONE))
 
-def time_convention(convetion : str, frequency : str):
-	if convetion == 'actual':
+def days_in_year(convention : str):
+	if convention == 'actual':
+		return 365
+	if convention == 'trading':
+		return 252
+
+def time_convention(convention : str, frequency : str):
+	days = days_in_year(convention)
+	if convention == 'actual':
 		if frequency == 'B':
-			return 1/365
+			return 1/days
 		if frequency == 'BME':
-			return 30/365
-	if convetion == 'trading':
+			return 30/days
+	if convention == 'trading':
 		if frequency == 'B':
-			return 1/252
+			return 1/days
 		if frequency == 'BME':
-			return 21/252
+			return 21/days
 
 def datetime_to_timestamp( dt : datetime):
 	ts_int = int(datetime(dt.year, dt.month, dt.day).timestamp())*1e3
 	return ts_int
 
-def compute_pct_change(dataset: pd.DataFrame, column : str, frequency : str ):
-	time_factor = np.sqrt(time_convention('trading', frequency))
-	time_factor = 1
-	logger.info(f'computing {M.PCT_CHANGE} and {M.LOG_PCT}')
-	dataset[M.PCT_CHANGE] = dataset[column].pct_change(fill_method=None)*100
-	logger.info(f'{M.PCT_CHANGE} mean : {dataset[M.PCT_CHANGE].mean():.3f} : std {dataset[M.PCT_CHANGE].std(ddof = 1)/time_factor:.3f}')
-	dataset[M.LOG_PCT] = np.log(dataset[column].shift(periods=-1)/dataset[column])*100
-	logger.info(f'{M.LOG_PCT} mean : {dataset[M.LOG_PCT].mean():.3f} : std {dataset[M.LOG_PCT].std(ddof = 1)/time_factor:.3f}')
+def compute_volatility_log_pct(dataset: pd.DataFrame, column : str, frequency : str, convention : str ):
+	time_factor = np.sqrt(time_convention(convention, frequency))
+	
+	dataset[M.LOG_PCT] = np.log(dataset[column].shift(periods=-1)/dataset[column])
+	vol = dataset[M.LOG_PCT].std(ddof = 1)/time_factor
+	return vol
 
+def compute_pct_change(dataset: pd.DataFrame, column : str, frequency : str, convention : str = 'trading' ):
+	time_factor = np.sqrt(time_convention(convention, frequency))
+
+	logger.info(f'computing {M.PCT_CHANGE} and {M.LOG_PCT}')
+	dataset[M.PCT_CHANGE] = dataset[column].pct_change(fill_method=None)
+	logger.info(f'{M.PCT_CHANGE} mean : {dataset[M.PCT_CHANGE].mean():.3f} : std {dataset[M.PCT_CHANGE].std(ddof = 1)*100/time_factor:.3f} %')
+	
+	vol = compute_volatility_log_pct(dataset, column, frequency, convention )
+	logger.info(f'{M.LOG_PCT} mean : {dataset[M.LOG_PCT].mean():.3f} : std {vol*100:0.2f} %')
+	return vol
 
 def applying_fx_spot(ticker_df : pd.DataFrame, fx_df : pd.DataFrame, columns : list):
 	logger.info('applying fx spot')

@@ -1,2 +1,6 @@
 ,Ticker,Currency,Description
 0,SOFR,USD,Secured Overnight Financing Rate (US)
+1,ESTER,EUR,Euro Short-Term Rate
+2,SONIA,GBP,Sterling Overnight Index Average 
+3,SARON,CHF,Swiss Average Rate Overnight
+4,TONAR,JPY,Tokyo Overnight Average Rate
