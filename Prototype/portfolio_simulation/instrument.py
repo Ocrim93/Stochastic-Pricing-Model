@@ -6,6 +6,7 @@ import numpy as np
 from prototype.instrument import compute_volatility_log_pct,days_in_year
 import math 
 
+
 def extract_dataset(data_map : dict):
 	data = pd.DataFrame()
 	for asset, df in data_map.items():
@@ -19,7 +20,8 @@ def extract_dataset(data_map : dict):
 	return data
 
 def extract_weight_dataset(weight_map : dict ):
-	if sum([weight  for _, weight in weight_map.items()]) != 1 :
+
+	if round(sum([weight  for _, weight in weight_map.items()]),6) != 1 :
 		logger.warning(f'weight sum not 1, given default: {1/len(weight_map):.03f}')
 		weight_map  = { asset : 1/len(weight_map) for asset  in weight_map}
 	return pd.DataFrame(data = { asset_name: [weight] for asset_name, weight in weight_map.items()})
@@ -58,8 +60,8 @@ def adding_pnl(data : pd.DataFrame, quantity_df : pd.DataFrame):
 	data[M.BALANCE] = data[M.BALANCE].fillna(0)
 
 def compute_sharpe_ratio(data : pd.DataFrame, risk_free_rate : float):
-	vol = compute_volatility_log_pct(data.copy(), M.BALANCE, 'B', 'trading')
+	vol = compute_volatility_log_pct(data.copy(), M.INDEX, 'B', 'trading')
 
-	rate_of_return = math.pow(data.iloc[-1][M.BALANCE]/data.iloc[-1][M.CASH], len(data)/days_in_year('trading'))
-	return (rate_of_return - risk_free_rate )/vol
+	rate_of_return = math.pow(data.iloc[-1][M.BALANCE]/data.iloc[-1][M.CASH],days_in_year('trading')/len(data)) -1 
+	return rate_of_return,vol,(rate_of_return - risk_free_rate )/vol
 

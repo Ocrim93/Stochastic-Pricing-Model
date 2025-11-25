@@ -39,16 +39,16 @@ Prototype to fetch and compute:
  ```
  Run the Protype
  ```
-  python -m prototype \
-    --ticker  "AAPL" \
-    --action "price" \
-    --start_date "01/01/2008" \
-    --end_date "01/01/2009" \
+  python -m prototype 
+    --ticker  "AAPL" 
+    --action "price" 
+    --start_date "01/01/2008" 
+    --end_date "01/01/2009" 
     --frequency "B"
-    --source "yahoo"  \
-    --currency "USD" \
-    --output "./" \
-    --save  \
+    --source "yahoo"  
+    --currency "USD" 
+    --output "./" 
+    --save  
     --plot
 
 ```

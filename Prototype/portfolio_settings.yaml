@@ -1,14 +1,36 @@
 budget_per_frequency: 
-budget: 50000
+budget: 20000
 frequency: "BME"
 risk_free_rate_source : "yahoo"
+target_portfolio_return : 0.2 
 
 asset:
   - name: "SPX"
-    weight: 0
+    weight: 0.4
     source: "yahoo"
 
   - name: "SX5E"
+    weight: 0.4
+    source: "yahoo"
+
+  - name: "N225"
     weight: 1
     source: "yahoo"
+
+  - name: "GC"
+    weight: 1
+    source: "yahoo"
+
+  - name: "SI"
+    weight: 0
+    source: "yahoo"
+
+  - name: "PL"
+    weight: 0
+    source: "yahoo"
+
+  - name: "PA"
+    weight: 0
+    source: "yahoo"
+    
     

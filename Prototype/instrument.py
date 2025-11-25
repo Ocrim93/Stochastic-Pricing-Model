@@ -29,7 +29,10 @@ def retrieve_ticker_from_csv():
 def formatting_input(args) -> dict:
 	args_map = {}
 	for t in args._get_kwargs():
-		args_map[t[0]] = t[1]
+		if t[0] in ['currency', 'ticker', 'frequency']:
+			args_map[t[0]] = t[1].upper()
+		else:
+			args_map[t[0]] = t[1]
 	return args_map
 
 def change_date_formatting(cob : Union[datetime,str] , formatting_from :str , formatting_to : str) -> str:

@@ -1,2 +1,5 @@
-,Ticker,Currency,Description
-
+Ticker,Currency,Description
+GC,USD,Gold COMEX
+SI,USD,Silver COMEX
+PL,USD,Platinum NYMEX
+PA,USD,Palladium NYMEX
