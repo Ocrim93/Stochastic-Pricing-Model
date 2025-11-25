@@ -24,11 +24,13 @@ sx5e = sx5e.rename(columns = {'SX5E' : 'CLOSE'})
 df_map = {'SX5E' :sx5e, 'SPX': spx }
 weight_map ={'SPX' : 0.3 , 'SX5E' : 0.7 }
 
-p = Portfolio( df_map,
+p = Portfolio(  df_map,
 				weight_map,
 				datetime(2018,5,31).date(),
 				datetime(2020,1,9).date(),
 				'BME',
+				0.03,
+				0.1,
 				0,
 				100)
 

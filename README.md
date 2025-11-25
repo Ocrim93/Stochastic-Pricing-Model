@@ -39,7 +39,7 @@ Prototype to fetch and compute:
  ```
  Run the Protype
  ```
-  python -m prototype 
+  poetry run python -m prototype 
     --ticker  "AAPL" 
     --action "price" 
     --start_date "01/01/2008" 
@@ -47,7 +47,7 @@ Prototype to fetch and compute:
     --frequency "B"
     --source "yahoo"  
     --currency "USD" 
-    --output "./" 
+    --output "./Output" 
     --save  
     --plot
 
