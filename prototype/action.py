@@ -1,6 +1,6 @@
 from __future__ import annotations
 from loguru import logger
-from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change
+from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset
 from .plot_instrument import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import Yahoo_Client
@@ -46,10 +46,10 @@ class Action():
 										FX_flag = True).fetch_price()
 
 		logger.info(f'start cleaning data for {ticker}')
-		data = cleaning_data(data,columns = columns, frequency=frequency)
+		data = cleaning_data(data, start_date, end_date, columns = columns, frequency=frequency)
 		if ticker_currency != reporting_currency:
 			logger.info(f'start cleaning data for FX_SPOT')
-			fx_df = cleaning_data(fx_df, columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH], drop_columns = [M.VOLUME], frequency = frequency)
+			fx_df = cleaning_data(fx_df, start_date, end_date, columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH], drop_columns = [M.VOLUME], frequency = frequency)
 			data = applying_fx_spot(data, fx_df, columns = [col for col in columns if col != M.VOLUME])
 		
 		return data[[M.DATE]+columns]
@@ -91,6 +91,31 @@ class Action():
 		
 		if self.args['save']:
 			price_fig,pct_fig =  Plot.price(data,self.filename) 
+			
+			self.save_data(data)
+			self.save_plot(price_fig, PLOT=self.args['plot'])
+			self.save_plot(pct_fig, PLOT=self.args['plot'])
+
+	def pair(self):
+		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
+		self.filename = f"{self.args['ticker']}_"+\
+						f"{self.args['start_date'].date()}_"+\
+						f"{self.args['end_date'].date()}_"+\
+						f"{self.args['frequency']}_{self.args['source']}"
+
+		asset_num = self.args['ticker'].split('-')[0]
+		asset_den = self.args['ticker'].split('-')[1]
+
+		self.args['ticker'] = asset_num
+		data_num = self._price(columns = [M.CLOSE])
+		self.args['ticker'] = asset_den
+		data_den = self._price(columns = [M.CLOSE])
+		
+		data = build_pair_dataset(data_num,data_den)
+		compute_pct_change(data, M.CLOSE, self.args['frequency'])
+
+		if self.args['save']:
+			price_fig,pct_fig =  Plot.pair(data,self.filename) 
 			
 			self.save_data(data)
 			self.save_plot(price_fig, PLOT=self.args['plot'])
