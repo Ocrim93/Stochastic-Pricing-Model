@@ -54,6 +54,7 @@ Prototype to fetch and compute:
 ```
 Choice for ```action``` :
  - price
+ - pair
  - financials
  - portfolio
  - volatility_surface 
