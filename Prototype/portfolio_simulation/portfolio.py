@@ -1,4 +1,6 @@
 from .instrument import extract_dataset,extract_weight_dataset,rebalancing_dates,adding_quantity,adding_cash,adding_pnl,compute_sharpe_ratio
+from .efficient_frontier import log_pct_dataset, Efficient_Frontier
+from prototype.instrument import time_convention
 from loguru import logger
 from prototype.measure import Measure as M
 import datetime as dt
@@ -13,6 +15,7 @@ class Portfolio	:
 				  end_date : dt.datetime,
 				  frequency : str, 
 				  risk_free_rate : float,
+				  target_portfolio_return : float = 0.2,
 				  budget : float = 0 ,
 				  budget_per_frequency : float = 0
 				  ):
@@ -21,34 +24,44 @@ class Portfolio	:
 		self.weight = extract_weight_dataset(weight_map)
 		self.base = 1 
 		self.frequency = frequency
-		self.risk_free_rate =risk_free_rate
+		self.risk_free_rate = risk_free_rate
+		self.target_portfolio_return = target_portfolio_return
+		self.rate_of_return,self.volatility,self.sharpe_ratio = 0,0,0
 		
 		rebalancing_dates(start_date, end_date, frequency, self.data)
 		self.starting_date = self.data[self.data[M.REBALANCING_DATE]].index[0]
-		#self.data = self.data.loc[self.data.index >= self.starting_date]
+		self.efficient_frontier()
 		
 		self.budget_per_frequency  =  budget/len(self.data[self.data[M.REBALANCING_DATE]]) if (budget_per_frequency == 0) else budget_per_frequency
 		self.budget = self.budget_per_frequency*len(self.data[self.data[M.REBALANCING_DATE]]) 
 		
 		self.build_index()
 		self.startegy()
-		self.sharpe_ratio()		
+		self.compute_sharpe_ratio()		
 		
 		self.investing_everything_at_t0()
 
 		self.data.reset_index(inplace = True)
 
 	def efficient_frontier(self):
-		pass
+		df = log_pct_dataset(self.data.copy(), self.weight.columns)
+		cov = df.cov()/time_convention('trading' , 'B')
+		mean = df.mean()/time_convention('trading' , 'B')
+		eff_front = Efficient_Frontier(self.target_portfolio_return,cov,mean,list(self.weight.columns))
+		eff_front.run()
 
-	def sharpe_ratio(self):
+		self.efficient_frontier_data = eff_front.data
+
+	def compute_sharpe_ratio(self):
 		statistics_data = self.data[self.data.index >= self.starting_date]
 		balance = statistics_data.iloc[-1][M.BALANCE]
 		PnL = statistics_data.iloc[-1][M.PnL]
 
+		self.rate_of_return,self.volatility,self.sharpe_ratio = compute_sharpe_ratio(statistics_data, self.risk_free_rate)
+		
 		logger.info(f'cash invested : {self.budget:.2f} | balance : {balance:.2f} | {M.PnL} : {PnL:.2f}')
-		sharpe_ratio = compute_sharpe_ratio(statistics_data, self.risk_free_rate)
-		logger.info(f'sharpe_ratio {sharpe_ratio:0.3f} | risk_free_rate : {self.risk_free_rate*100:.2f} %')
+		logger.info(f'average rate of return  {self.rate_of_return*100:0.3f} % | volatility : {self.volatility*100:.2f} %')
+		logger.info(f'sharpe_ratio {self.sharpe_ratio:0.3f} | risk_free_rate : {self.risk_free_rate*100:.2f} %')
 
 	def compute_base(self):
 		mean_per_asset = [self.data[asset].mean()  for asset in self.weight.columns]
@@ -66,25 +79,25 @@ class Portfolio	:
 
 	def weighted_price_index(self):
 		logger.info('computing dollar-weighted index')
-		data = self.data 
-		data[M.INDEX] = (data*self.weight.iloc[0]).sum(axis=1)
-		
+		self.data[M.INDEX] = (self.data*self.weight.iloc[0]).sum(axis=1)
+
 	def fixed_share_index(self):
 		logger.info('computing fixed-share index') 
-		data = self.data 
 		base = self.compute_base()
-		initial_prices = self.weight.iloc[0]/data.iloc[0]
+		initial_prices = self.weight.iloc[0]/self.data.iloc[0]
 
-		data[M.FIXED_SHARE_INDEX] = base*(data*initial_prices).sum(axis=1)
+		self.data[M.FIXED_SHARE_INDEX] = base*(self.data*initial_prices).sum(axis=1)
 
 	def build_index(self):
 		self.fixed_share_index()
 		self.weighted_price_index()
+		self.data = self.data.astype({ M.FIXED_SHARE_INDEX : "float64",
+									   M.INDEX : "float64"})
 
 	def investing_everything_at_t0(self):
 		logger.info(f'investing all at time {self.starting_date}')
 
-		quantity_df = self.budget/self.data.loc[self.starting_date][self.weight.columns]
+		quantity_df = self.budget*self.weight.iloc[0]/self.data.loc[self.starting_date][self.weight.columns]
 		balance = (self.data*quantity_df).sum(axis=1).values[-1]
 		logger.info(f'cash invested : {self.budget:.2f} | balance : {balance:.2f} | {M.PnL} : {balance - self.budget:.2f}' )
 

@@ -1,12 +1,13 @@
-,Ticker,Currency,Description
-0,SPX,USD,S&P 500
-1,DJI,USD,Dow Jones Industrial average
-2,FTSE100,GBP,FTSE100
-3,SX5E,EUR,EURO STOXX 50
-4,HSI,HKD,Hang Seng Index (Hong Kong)
-5,NASDAQ100,USD,NASDAQ-100
-6,EMX,USD,MSCI EMERGING MARKETS INDEX
-
- 
-
-
+Ticker,Currency,Description
+SPX,USD,S&P 500
+DJIA,USD,Dow Jones Industrial average
+FTSE,GBP,FTSE100
+SX5E,EUR,EURO STOXX 50
+HSI,HKD,Hang Seng Index (Hong Kong)
+NASDAQ100,USD,NASDAQ-100
+MXEF,USD,MSCI EMERGING MARKETS INDEX
+NASDAQ,USD,NASDAQ Composite
+N225,JPY, Nikkei 225
+SHCOMP,CNY,SSE Composite Index
+AXJO,AUD,Australian Securities Exchange
+KOSPI,KRW,KOSPI Composite Index

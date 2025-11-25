@@ -70,10 +70,10 @@ class Yahoo_Client(Client):
 		return self.client.cash_flow
 
 	def fetch_current_price(self):
-		df = self.fetch()
+		df = self.fetch_price()
 		df = df.sort_values(by = Measure.DATE, ascending = True)
 		closing_price = df[Measure.CLOSE].values[0]
-		logger.info(f' current closing price {self.ticker}: {closing_price} {self.start_date}')
+		logger.info(f' current closing price {self.ticker}: {closing_price:.2f} {self.end_date}')
 		return closing_price
 
 	def fetch_currency(self) -> str :

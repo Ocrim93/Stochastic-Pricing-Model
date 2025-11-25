@@ -1,7 +1,7 @@
 from __future__ import annotations
 from loguru import logger
-from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change, datetime_to_timestamp
-from .plot_lib import create_figure, create_candlestick, adding_line, create_multiple_axes_figure,adding_vertical_line
+from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change
+from .plot_instrument import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import Yahoo_Client
 from plotly.offline import  iplot
@@ -17,6 +17,11 @@ class Action():
 		if source == 'yahoo':
 			return Yahoo_Client( ticker, start_date , end_date, **kwargs)
 		logger.warning(f'no source found : {source}')
+
+	@staticmethod
+	def get_current_price(ticker,source,**kwargs):
+		client = Action.get_client(ticker, business_date(None), business_date(None), source)
+		return client.fetch_current_price()
 
 	@staticmethod
 	def get_price(ticker,
@@ -84,11 +89,8 @@ class Action():
 		compute_pct_change(data, M.CLOSE, self.args['frequency'])
 
 		
-		if self.args['save']: 
-			fig_title = ' '.join(self.filename.split('_'))
-			price_fig = create_candlestick(data,f"{fig_title}",M.DATE, M.CLOSE)
-			price_fig = adding_line(price_fig, data, M.CLOSE, M.DATE,M.CLOSE)
-			pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT) 
+		if self.args['save']:
+			price_fig,pct_fig =  Plot.price(data,self.filename) 
 			
 			self.save_data(data)
 			self.save_plot(price_fig, PLOT=self.args['plot'])
@@ -112,6 +114,7 @@ class Action():
 		budget_per_frequency = config['budget_per_frequency'] or 0
 		risk_free_rate_source = config['risk_free_rate_source']
 		frequency = config['frequency'] 
+		target_portfolio_return = config['target_portfolio_return']
 
 		self.args['frequency'] = 'B'
 
@@ -128,46 +131,28 @@ class Action():
 			weight_map[asset['name']] = asset['weight'] if  asset['weight'] != None else 1/len(config['asset'])
 
 		risk_free_rate = Risk_Free_Rate(self.args['currency'])
-		risk_free_rate_price =  Action.get_price( risk_free_rate.name,
-												  business_date(None),
-												  business_date(None),
-												  risk_free_rate_source,
-												  self.args['currency'],
-												  'B', 
-												  [M.CLOSE] )[M.CLOSE].values[0]
+		risk_free_rate_price =  Action.get_current_price( risk_free_rate.name,risk_free_rate_source)
+								
 		portfolio = Portfolio( df_map,
-				   weight_map,
-				   self.args['start_date'],
-				   self.args['end_date'],
-				   frequency,
-				   risk_free_rate.value(risk_free_rate_price),
-				   budget,
-				   budget_per_frequency)
+							   weight_map,
+							   self.args['start_date'],
+							   self.args['end_date'],
+							   frequency,
+							   risk_free_rate.value(risk_free_rate_price),
+							   target_portfolio_return,
+							   budget,
+							   budget_per_frequency)
 
 		self.filename = '_'.join(weight_map)
 		self.folder_output = f'{self.base_folder_output}/{self.filename}'
 
-		starting_strategy_date = portfolio.data.loc[portfolio.data[M.REBALANCING_DATE],M.DATE].values[0]
-		starting_strategy_date = datetime_to_timestamp(starting_strategy_date)
-	
 		if self.args['save'] : 
 			self.save_data(portfolio.data)
+			self.save_data(portfolio.efficient_frontier_data,'Efficient_Frontier')
 
-			fig_title = ' '.join(self.filename.split('_'))
-			pnl_fig = create_multiple_axes_figure(portfolio.data,
-												  fig_title+' PnL',
-												  M.DATE,
-												  [M.CASH,M.PnL,M.BALANCE],
-												  M.PnL)
-			pnl_fig = adding_vertical_line(pnl_fig,starting_strategy_date, 'starting')
-			asset_fig = create_multiple_axes_figure(portfolio.data,
-												  fig_title + ' Asset',
-												  M.DATE,
-												  weight_map,
-												  M.INDEX)
-			asset_fig = adding_vertical_line(asset_fig,starting_strategy_date,'starting')
-			self.save_plot(pnl_fig, PLOT=self.args['plot'])
+			asset_fig, pnl_fig = Plot.portfolio(portfolio.data, weight_map, portfolio.starting_date, self.filename)
 			self.save_plot(asset_fig, PLOT=self.args['plot'])
+			self.save_plot(pnl_fig, PLOT=self.args['plot'])
 
 
 	def volatility_surface(self):
@@ -187,13 +172,13 @@ class Action():
 					 			  dividend)
 		vol.run()
 
-	def save_data(self, data ):
+	def save_data(self,data, name: str = '' ):
 		create_folder(self.folder_output)
 		if data.empty:
-			logger.warning(f'not saved empty, {self.filename}')
+			logger.warning(f'not saved empty, {self.filename}_{name}')
 		else:
 			logger.info(f'saving data {self.filename}')
-			data.to_csv(f'{self.folder_output}/{self.filename}.csv')
+			data.to_csv(f'{self.folder_output}/{self.filename}_{name}.csv')
 
 	def save_plot(self,figure, extension = 'html', PLOT = False):
 		filename = figure.layout['title']['text'].replace(' ', '_')
