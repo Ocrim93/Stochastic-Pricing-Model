@@ -156,7 +156,7 @@ class Action():
 			weight_map[asset['name']] = asset['weight'] if  asset['weight'] != None else 1/len(config['asset'])
 
 		risk_free_rate = Risk_Free_Rate(self.args['currency'])
-		risk_free_rate_price =  Action.get_current_price( risk_free_rate.name,risk_free_rate_source)
+		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,risk_free_rate_source)
 								
 		portfolio = Portfolio( df_map,
 							   weight_map,

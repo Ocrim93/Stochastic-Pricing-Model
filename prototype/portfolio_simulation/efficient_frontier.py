@@ -41,12 +41,13 @@ class Efficient_Frontier():
 			)
 		return result
 
-	def __init__(self, target_return : float,
+	def __init__(self, target : float,
 					   cov : pd.DataFrame,
 					   mu : np.array,
-					   asset_names : list):
+					   asset_names : list,
+					   n : int = 50):
 
-		self.target_return = np.linspace(min(mu),target_return,50)
+		self.target_return = np.linspace(min(mu),max(mu),n) if target == None else np.linspace(min(mu),target,n)
 		self.cov = cov
 		self.mu = mu
 		self.columns =  [M.PORTFOLIO_RETURN,M.PORTFOLIO_VOL] + asset_names

@@ -17,7 +17,8 @@ def formatting_data(data : pd.DataFrame, key : str,  column_set : list = [] ):
 
 def set_date_boundaries(data : pd.DataFrame, start_date : datetime, end_date : datetime):
 	data = data[data[Measure.DATE] >= start_date]
-	data = data[data[Measure.DATE] <= end_date]
+	if end_date != None:
+		data = data[data[Measure.DATE] <= end_date]
 	return data
 
 def get_ticker(ticker : str, FX_flag : bool):
