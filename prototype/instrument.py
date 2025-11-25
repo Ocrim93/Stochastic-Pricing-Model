@@ -30,7 +30,7 @@ def formatting_input(args) -> dict:
 	args_map = {}
 	for t in args._get_kwargs():
 		if t[0] in ['currency', 'ticker', 'frequency']:
-			args_map[t[0]] = t[1].upper()
+			args_map[t[0]] = t[1].upper() if t[1] != None else None
 		else:
 			args_map[t[0]] = t[1]
 	return args_map
