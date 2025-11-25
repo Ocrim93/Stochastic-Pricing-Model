@@ -52,13 +52,20 @@ Prototype to fetch and compute:
     --plot
 
 ```
+Data and Plot are stored in the output folder.
+
 Choice for ```action``` :
  - price
+ - pair
  - financials
  - portfolio
  - volatility_surface 
 
-Data and Plot are stored in the output folder.
+### Pair 
+ Retrive and plot custom pairing, like SPX vs GOLD. 
+ Syntax on the ticker paramter as ```SPX_GC```, using ```_``` delimeter.
+
+
 
 ### Frequency conventions
 

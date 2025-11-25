@@ -97,7 +97,6 @@ def compute_pct_change(dataset: pd.DataFrame, column : str, frequency : str, con
 
 def applying_fx_spot(ticker_df : pd.DataFrame, fx_df : pd.DataFrame, columns : list):
 	logger.info('applying fx spot')
-
 	merging_data = ticker_df.merge(fx_df, how = 'inner', on = M.DATE, suffixes = ('_TICKER','_FX'))
 	for col in columns:
 		merging_data[col] = merging_data[f'{col}_TICKER']*merging_data[f'{col}_FX']
@@ -106,21 +105,24 @@ def applying_fx_spot(ticker_df : pd.DataFrame, fx_df : pd.DataFrame, columns : l
 	merging_data = merging_data.drop(columns = [col for col in merging_data.columns if ('_TICKER' in col or '_FX' in col)], axis =1)
 	return merging_data
 
+def build_pair_dataset(num_df : pd.DataFrame, den_df : pd.DataFrame):
+	pair_df = num_df.merge(den_df, how = 'inner' , on = M.DATE, suffixes = ('_num' , '_den') )
+	pair_df[M.CLOSE] = pair_df[f'{M.CLOSE}_num']/pair_df[f'{M.CLOSE}_den']
+
+	return pair_df[[M.DATE,M.CLOSE]]
+
 def build_business_dates_dataset(start_date, end_date, freq = 'B') :
 	date_range = pd.date_range(start=start_date, end=end_date, freq = freq, tz = ZoneInfo(TIME_ZONE))
 	date_range_df = pd.DataFrame(data = { M.DATE : date_range})
 	date_range_df[M.DATE] = date_range_df[M.DATE].apply(lambda x : x.date())
-
 	return date_range_df
 
-def check_missing_dates(dataset : pd.DataFrame, freq : str):
+def check_missing_dates(dataset : pd.DataFrame, start_date : datetime, end_date : datetime, freq : str):
 	dataset[M.DATE] = pd.to_datetime(dataset[M.DATE],format = "%Y-%b-%d", utc = True)
 	dataset[M.DATE] = dataset[M.DATE].apply(lambda x : x.astimezone(ZoneInfo(TIME_ZONE)))
 	dataset[M.DATE] = dataset[M.DATE].apply(lambda x : x.date())
 
 	dataset.sort_values(by = M.DATE, ignore_index=True, ascending = True, inplace = True)
-	end_date = dataset[M.DATE].to_list()[-1]
-	start_date = dataset[M.DATE].to_list()[0]
 
 	date_range_df = build_business_dates_dataset(start_date, end_date, freq)
 	missing_dates = date_range_df[~date_range_df[M.DATE].isin(dataset[M.DATE].to_list()) ]
@@ -132,10 +134,10 @@ def check_missing_dates(dataset : pd.DataFrame, freq : str):
 	merged['freq_date'] = np.where(merged[M.DATE].isin(date_range_df[M.DATE].to_list()),True,False)
 	return merged
 
-def cleaning_data(data: pd.DataFrame, columns: list = [], drop_columns : list =[], frequency = 'B'):
+def cleaning_data(data: pd.DataFrame, start_date : datetime, end_date : datetime ,columns: list = [], drop_columns : list =[], frequency = 'B'):
 	df = data.copy()
 	df = df.drop(columns = drop_columns, axis = 1)
-	df = check_missing_dates(df, frequency)
+	df = check_missing_dates(df, start_date, end_date, frequency)
 	for col in columns:
 		if sum(df[col].isna()) > 0:
 			logger.warning(f'forward and back fill, {col} n. {sum(df[col].isna()) }')

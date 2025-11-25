@@ -16,6 +16,16 @@ class Plot:
 		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT)
 
 		return price_fig,pct_fig
+
+	@staticmethod
+	def pair(data : pd.DataFrame, filename : str):
+		fig_title = ' '.join(filename.split('_'))
+	
+		price_fig = create_figure(data,f"{fig_title}",M.DATE, M.CLOSE)
+	
+		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT)
+
+		return price_fig,pct_fig
 	
 	@staticmethod
 	def portfolio(data : pd.DataFrame, weight_map : dict,  starting_date : datetime, filename : str ):

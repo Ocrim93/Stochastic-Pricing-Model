@@ -42,7 +42,6 @@ class Portfolio	:
 		self.investing_everything_at_t0()
 
 		self.data.reset_index(inplace = True)
-		print(self.data)
 
 	def efficient_frontier(self):
 		df = log_pct_dataset(self.data.copy(), self.weight.columns)

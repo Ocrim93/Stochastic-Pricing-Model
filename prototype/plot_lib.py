@@ -57,6 +57,7 @@ def create_candlestick( data,
 				    	title,
 				        x_axis,
 				        y_axis):
+
 	figure = make_subplots(rows=2, cols=1, shared_xaxes=True, 
 			               vertical_spacing=0.30, subplot_titles=(title.split(' ')[0], M.VOLUME), 
 			               row_width=[0.2, 0.7])

@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd 
 from loguru import logger 
 import yfinance as yf
-from .instrument import formatting_data, get_ticker
+from .instrument import formatting_data, get_ticker,set_date_boundaries
 from .yahoo_measure import map_to_formating,map_from_formatting
 from prototype.measure import Measure
 from prototype.instrument import change_date_formatting
@@ -39,6 +39,7 @@ class Yahoo_Client(Client):
 		if df.empty:
 			logger.warning(f" price {self.ticker} empty dataframe")
 		formatted_df = formatting_data(df,'price')
+		formatted_df = set_date_boundaries(formatted_df,self.start_date,self.end_date)
 		logger.info(f'yahoo retrieved {self.ticker} {len(formatted_df)} records')
 		return formatted_df
 
