@@ -1,8 +1,8 @@
 from datetime import datetime
 import pandas as pd
 from prototype.portfolio_simulation.portfolio import Portfolio 
-import unittest 
 from prototype.instrument import retrieve_ticker_from_csv
+from prototype.measure import Measure as M
 
 retrieve_ticker_from_csv()
 
@@ -34,24 +34,19 @@ p = Portfolio(  df_map,
 				0,
 				100)
 
-class TestPortfolio(unittest.TestCase):
+data = p.data
 
+def test_quantity():
+	spx_q = data.iloc[-1]['SPX_Q']
+	sx5e_q = data.iloc[-1]['SX5E_Q']
+	assert (round(spx_q,6) == round(1.02857142857143,6))
+	assert (round(sx5e_q,6) == round(1.28333333333333,6))
 
-	def test_quantity(self):
-		spx_q = p.data.iloc[-1]['SPX_Q']
-		sx5e_q = p.data.iloc[-1]['SX5E_Q']
+def test_cash():
+	assert data[M.CASH].values[-1] == 200
 
-		assert (round(spx_q,6) == round(1.02857142857143,6))
-		assert (round(sx5e_q,6) == round(1.28333333333333,6))
+def test_balance():
+	assert round(data[M.BALANCE].values[-1],6) == round(326.119047619047,6)
 
-	def balance_test(self):
-		assert data['CASH'][-1] == 200
-
-	def balance_test(self):
-		assert round(data['BALANCE'][-1],6) == round(326.119047619047,6)
-
-	def pnl_test(self):
-		assert round(data['PnL'][-1],6) == round(326.119047619047 - 200,6)
-
-if __name__ == '__main__' :
-	unittest.main()
+def test_pnl():
+	assert round(data[M.PnL].values[-1],6) == round(326.119047619047 - 200,6)

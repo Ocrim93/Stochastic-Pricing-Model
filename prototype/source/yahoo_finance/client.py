@@ -25,7 +25,7 @@ class Yahoo_Client(Client):
 		self.start_date = start_date
 		self.end_date = end_date if start_date != end_date else None
 		self.period = period
-		logger.info(f'creating Yahoo Client')
+		logger.info(f'creating Yahoo Client {self.start_date.date()} {self.end_date }')
 		yahoo_ticker = get_ticker(ticker,FX_flag)
 		try:
 			self.client = yf.Ticker(yahoo_ticker)

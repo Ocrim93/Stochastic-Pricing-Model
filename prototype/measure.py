@@ -16,7 +16,7 @@ class Measure:
 
 	def load_or_get_cache(self):
 		if self.key in self.__class__.__cache:
-			return __cache[self.key]
+			return self.__class__.__cache[self.key]
 		else:
 			df = pd.read_csv(self.io)	
 			n = len(df)
