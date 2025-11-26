@@ -30,7 +30,7 @@ asset:
     source: "yahoo"
 
   - name: "PA"
-    weight: 1
+    weight: 0
     source: "yahoo"
     
     
