@@ -41,7 +41,7 @@ def change_date_formatting(cob : Union[datetime,str] , formatting_from :str , fo
 	cob = cob.strftime(formatting_to)
 	return cob
 
-def business_date(date: str):
+def business_date(date: str = None):
 	date = datetime.strptime(date, "%d/%m/%Y") if date != None else datetime.now() - timedelta(days =1)
 
 	shift = timedelta(days = 0)

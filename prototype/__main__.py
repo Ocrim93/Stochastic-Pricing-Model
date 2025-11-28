@@ -9,7 +9,7 @@ parser.add_argument(
 	"--action",
 	required = True,
 	action="store",
-	help = "action such as volatility_surface, financials, price, pair (i.e. SPX-GC)"
+	help = "action such as volatility_surface, financials, price (i.e. SPX, FX_USDEUR) ,pair (i.e. SPX-GC)"
 	)
 parser.add_argument(
 	"-t",
