@@ -28,6 +28,16 @@ def test_price():
 	except Exception as e:
 		pytest.fail(f"Unexpected exception raised: {e}")
 
+def test_price_FX():
+	args = base_args.copy()
+	args['action'] = 'price'
+	args['ticker'] = 'FX_EURUSD'
+	args['frequency'] = 'B'
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
 def test_portfolio():
 	args = base_args.copy()
 	args['action'] = 'portfolio'
@@ -54,6 +64,16 @@ def test_pair():
 	args['ticker'] = 'SX5E-GC'
 	args['currency'] = 'EUR'
 	args['frequency'] = 'B'
+
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
+def test_volatility_surface():
+	args = base_args.copy()
+	args['action'] = 'volatility_surface'
+	args['ticker'] = 'AAPL'
 
 	try:
 		Action(args)

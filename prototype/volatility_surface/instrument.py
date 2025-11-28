@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
-
+from prototype.instrument import days_in_year
+from loguru import logger
+import time 
 
 LIST_SYMBOL = ['F','G','H','J','K','M','N','Q','U','V','X','Z']
 
@@ -12,14 +14,22 @@ def get_map_month_symbol(reverse = False ):
 
 def expiration_in_year(date1 : datetime,
 					   date2 : datetime,
-					   formatting :str = '%d/%m/%Y',
-					   convention : str = 'trading_days' ) -> float :
+					   convention : str,
+					   formatting :str = '%d/%m/%Y' ) -> float :
+					   
 	date1 = datetime.strptime(date1, formatting)
 	date2 = datetime.strptime(date2, formatting)
 	days = (date2 - date1).days
-	if convention == 'actual':
-		y = days/360
-	if convention == 'trading_days':
-		y = days/252
 
-	return y
+	return days/days_in_year(convention)
+
+def timer(func):
+	def inner(*args, **kwargs):
+		start = time.time()
+		result = func(*args, **kwargs)
+		dt = time.time() -start
+		mins, secs = dt//60 , round(dt%60,2)
+		logger.info(f'operation took -> {mins } m {secs}')
+		return result
+	return inner
+

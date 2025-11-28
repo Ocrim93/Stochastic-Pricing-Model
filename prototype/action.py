@@ -1,26 +1,27 @@
 from __future__ import annotations
 from loguru import logger
-from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset
+from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset,change_date_formatting
 from .plot_instrument import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import Yahoo_Client
 from plotly.offline import  iplot
 from prototype.portfolio_simulation.portfolio import Portfolio
-from .interest_rate import Risk_Free_Rate 
+from prototype.volatility_surface.volatility_surface import Volatility_Surface
+from .interest_rate import Risk_Free_Rate
 import yaml
 
 
 class Action():
 
 	@staticmethod
-	def get_client(ticker, start_date, end_date, source,**kwargs ):
+	def get_client(ticker, start_date, end_date, source, FX_flag = False, **kwargs ):
 		if source == 'yahoo':
-			return Yahoo_Client( ticker, start_date , end_date, **kwargs)
+			return Yahoo_Client( ticker, start_date , end_date, FX_flag, **kwargs)
 		logger.warning(f'no source found : {source}')
 
 	@staticmethod
-	def get_current_price(ticker,source,**kwargs):
-		client = Action.get_client(ticker, business_date(None), business_date(None), source)
+	def get_current_price(ticker, source, **kwargs):
+		client = Action.get_client(ticker, business_date(), business_date(), source)
 		return client.fetch_current_price()
 
 	@staticmethod
@@ -30,10 +31,12 @@ class Action():
 				  source,
 				  reporting_currency,
 				  frequency, 
-				  columns
+				  columns,
+				  FX_flag,
+				  **kwargs
 				  ):
 
-		client = Action.get_client(ticker, start_date, end_date, source)
+		client = Action.get_client(ticker, start_date, end_date, source, FX_flag, **kwargs)
 
 		data = client.fetch_price()
 		ticker_currency = client.fetch_currency()
@@ -59,6 +62,7 @@ class Action():
 
 		args['start_date'] = business_date(args['start_date'])
 		args['end_date'] = business_date(args['end_date'])
+			
 		logger.info(f"star_date : {args['start_date'].date()} end_date : {args['end_date'].date()} ")
 		
 		self.args = args
@@ -68,14 +72,16 @@ class Action():
 	def _client(self):
 		return Action.get_client(self.args['ticker'], self.args['start_date'], self.args['end_date'],self.args['source'])
 
-	def _price(self, columns : list):
+	def _price(self, columns : list, FX_flag : bool = False, **kwargs ):
 		return Action.get_price( self.args['ticker'], 
 							     self.args['start_date'],
 							     self.args['end_date'],
 							     self.args['source'],
 							     self.args['currency'],
 							     self.args['frequency'],
-							     columns)
+							     columns,
+							     FX_flag,
+								 **kwargs)
 
 	def price(self):
 		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
@@ -84,11 +90,16 @@ class Action():
 						f"{self.args['end_date'].date()}_"+\
 						f"{self.args['frequency']}_{self.args['source']}"
 
-		data = self._price(columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH,M.VOLUME])
+		if 'FX_' in self.args['ticker']:
+			self.args['ticker'] =  self.args['ticker'].split('_')[1]
+			self.args['currency'] = self.args['ticker'][3:]
+			FX_flag = True
+		else:
+			FX_flag = False
+		data = self._price(columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH,M.VOLUME], FX_flag = FX_flag)
 		
 		compute_pct_change(data, M.CLOSE, self.args['frequency'])
 
-		
 		if self.args['save']:
 			price_fig,pct_fig =  Plot.price(data,self.filename) 
 			
@@ -181,19 +192,28 @@ class Action():
 
 
 	def volatility_surface(self):
+		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
+		self.filename = f"{self.args['ticker']}_{self.args['source']}"
+		
+		self.args['start_date'] = business_date()
+		self.args['end_date'] = business_date()
+
 		client = self._client()
 		options = client.fetch_options()
+		
 		spot_price = client.fetch_current_price()
-	
-		ir_client = client(Ticker.SOFR, start_date, end_date)
-		risk_free_rate =  Risk_Free_Rate.SOFR(ir_client.fetch_current_price())
+		ticker_currency = client.fetch_currency()
+		
+		risk_free_rate = Risk_Free_Rate(ticker_currency)
+		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
+		
 		dividend = client.fetch_dividend_yield()
 
-		vol = Volatility_Surface( ticker,
+		vol = Volatility_Surface( self.args['ticker'],
 					 			  options, 
-					 			  start_date,
+					 			  change_date_formatting(self.args['start_date'],'','%d/%m/%Y'),
 					 			  spot_price,
-					 			  risk_free_rate,
+					 			  risk_free_rate.value(risk_free_rate_price),
 					 			  dividend)
 		vol.run()
 

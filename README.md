@@ -55,12 +55,14 @@ Prototype to fetch and compute:
 Data and Plot are stored in the output folder.
 
 Choice for ```action``` :
- - price
+ - price 
  - pair
  - financials
  - portfolio
  - volatility_surface 
 
+### Price
+ Only FX asset as ```FX_USDEUR``` 
 ### Pair 
  Retrive and plot custom pairing, like SPX vs GOLD. 
  Syntax on the ticker paramter as ```SPX_GC```, using ```_``` delimeter.

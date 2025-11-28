@@ -18,8 +18,8 @@ class Yahoo_Client(Client):
 				 ticker : str,
 				 start_date : datetime,
 				 end_date : datetime,
-				 period : str = '1d',
-				 FX_flag : bool = False
+				 FX_flag : bool ,
+				 period : str = '1d'
 				 ):
 		self.ticker = ticker
 		self.start_date = start_date
