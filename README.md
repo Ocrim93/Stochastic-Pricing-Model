@@ -74,8 +74,8 @@ Choice for ```action``` :
 | B      | Business date          |
 | W      | Weekly                 |
 | BME    | Business month end     |
-| BMS    | business month start   |
-| BQE    | business quarter end   |
-| BQS    | business quarter start |
-| BYE    | business year end      |
-| BYS    | business year start    |
+| BMS    | Business month start   |
+| BQE    | Business quarter end   |
+| BQS    | Business quarter start |
+| BYE    | Business year end      |
+| BYS    | Business year start    |

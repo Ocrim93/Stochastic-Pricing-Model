@@ -1,4 +1,4 @@
-from  .yahoo_measure import map_to_formating, ticker_map
+from  .yahooMeasure import map_to_formating, ticker_map
 import pandas as pd
 from prototype.measure import Measure
 from datetime import datetime 

@@ -2,7 +2,7 @@
 	risk free rate
 """
 
-class Interest_Rate():
+class InterestRate():
 	def __init__(self, currency):
 		self.currency = currency
 		self.value = self._value
@@ -31,7 +31,7 @@ class Interest_Rate():
 	def _value(self,value):
 		return value/100
 
-class Treasury(Interest_Rate):
+class Treasury(InterestRate):
 
 	def __init__(self, currency : str ):
 		super().__init__(currency)
@@ -44,7 +44,7 @@ class Treasury(Interest_Rate):
 		return 'ACT/ACT'
 		
 
-class Risk_Free_Rate(Interest_Rate):
+class RiskFreeRate(InterestRate):
 
 	def __init__(self, currency : str ):
 		super().__init__(currency)

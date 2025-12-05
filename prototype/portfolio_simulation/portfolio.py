@@ -1,9 +1,9 @@
 from .instrument import extract_dataset,extract_weight_dataset,rebalancing_dates,adding_quantity,adding_cash,adding_pnl,compute_sharpe_ratio
-from .efficient_frontier import log_pct_dataset, Efficient_Frontier
-from prototype.instrument import time_convention
+from .efficientFrontier import log_pct_dataset, EfficientFrontier
 from loguru import logger
 from prototype.measure import Measure as M
 import datetime as dt
+from prototype.timeHelper import TimeHelper
 
 
 class Portfolio	:
@@ -46,9 +46,9 @@ class Portfolio	:
 	def efficient_frontier(self):
 		logger.info('compute capital market line')
 		df = log_pct_dataset(self.data.copy(), self.weight.columns)
-		cov = df.cov()/time_convention('trading' , 'B')
-		mean = df.mean()/time_convention('trading' , 'B')
-		eff_front = Efficient_Frontier(self.target_portfolio_return,cov,mean,list(self.weight.columns))
+		cov = df.cov()/TimeHelper.time_conversion('trading', 'B')
+		mean = df.mean()/TimeHelper.time_conversion('trading','B')
+		eff_front = EfficientFrontier(self.target_portfolio_return,cov,mean,list(self.weight.columns))
 		eff_front.run()
 
 		self.efficient_frontier_data = eff_front.data

@@ -17,12 +17,34 @@ base_args = {'action' : None,
 		'plot' : False 
 		}
 
-def test_price():
+def test_price_BMS():
 	args = base_args.copy()
 	args['action'] = 'price'
 	args['ticker'] = 'SX5E'
 	args['currency'] = 'EUR'
-	args['frequency'] = 'B'
+	args['frequency'] = 'BMS'
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
+def test_price_BYS():
+	args = base_args.copy()
+	args['action'] = 'price'
+	args['ticker'] = 'SX5E'
+	args['currency'] = 'EUR'
+	args['frequency'] = 'BMS'
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
+def test_price_W():
+	args = base_args.copy()
+	args['action'] = 'price'
+	args['ticker'] = 'SX5E'
+	args['currency'] = 'EUR'
+	args['frequency'] = 'W'
 	try:
 		Action(args)
 	except Exception as e:

@@ -1,7 +1,7 @@
 import pandas as pd
 from .measure import Measure as M
-from .plot_lib import create_figure, create_candlestick, adding_line, create_multiple_axes_figure,adding_vertical_line
-from .instrument import datetime_to_timestamp
+from .plotLib import create_figure, create_candlestick, adding_line, create_multiple_axes_figure,adding_vertical_line
+from .timeHelper import TimeHelper
 from datetime import datetime
 
 class Plot:
@@ -30,7 +30,7 @@ class Plot:
 	@staticmethod
 	def portfolio(data : pd.DataFrame, weight_map : dict,  starting_date : datetime, filename : str ):
 		
-		starting_strategy_date = datetime_to_timestamp(starting_date)
+		starting_strategy_date = TimeHelper.datetime_to_timestamp(starting_date)
 		fig_title = ' '.join(filename.split('_'))
 		
 		pnl_fig = create_multiple_axes_figure(data,

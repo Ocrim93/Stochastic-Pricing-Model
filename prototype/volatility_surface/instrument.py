@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from prototype.instrument import days_in_year
+from prototype.timeHelper import TimeHelper 
 from prototype.measure import Measure as M
 from loguru import logger
 import time 
@@ -23,7 +23,7 @@ def expiration_in_year(date1 : datetime,
 	date2 = datetime.strptime(date2, formatting)
 	days = (date2 - date1).days
 
-	return days/days_in_year(convention)
+	return days/TimeHelper.days_in_year(convention)
 
 def build_dataframe( IV_dict : dict ):
 	df = pd.DataFrame()

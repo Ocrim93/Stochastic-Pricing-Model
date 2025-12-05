@@ -7,7 +7,7 @@ from .instrument import expiration_in_year, build_dataframe
 from .solver import Solver
 
 
-class Volatility_Surface :
+class VolatilitySurface :
 
 	def __init__(self,
 				 ticker : str,

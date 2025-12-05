@@ -1,15 +1,15 @@
 from __future__ import annotations
 from loguru import logger
-from .instrument import create_folder,cleaning_data,business_date,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset,change_date_formatting
-from .plot_instrument import Plot
+from .instrument import create_folder,cleaning_data,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset
+from .plotInstrument import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import Yahoo_Client
 from plotly.offline import  iplot
 from prototype.portfolio_simulation.portfolio import Portfolio
-from prototype.volatility_surface.volatility_surface import Volatility_Surface
-from .interest_rate import Risk_Free_Rate
+from prototype.volatility_surface.volatilitySurface import VolatilitySurface
+from .interestRate import RiskFreeRate
 import yaml
-
+from .timeHelper import  TimeHelper 
 
 class Action():
 
@@ -21,7 +21,7 @@ class Action():
 
 	@staticmethod
 	def get_current_price(ticker, source, **kwargs):
-		client = Action.get_client(ticker, business_date(), business_date(), source)
+		client = Action.get_client(ticker, TimeHelper.business_date(), TimeHelper.business_date(), source)
 		return client.fetch_current_price()
 
 	@staticmethod
@@ -60,8 +60,8 @@ class Action():
 	def __init__(self, args : dict ):
 		method = getattr(self,args['action'])
 
-		args['start_date'] = business_date(args['start_date'])
-		args['end_date'] = business_date(args['end_date'])
+		args['start_date'] = TimeHelper.business_date(args['start_date'])
+		args['end_date'] = TimeHelper.business_date(args['end_date'])
 			
 		logger.info(f"star_date : {args['start_date'].date()} end_date : {args['end_date'].date()} ")
 		
@@ -168,7 +168,7 @@ class Action():
 			df_map[asset['name']] = self._price([M.CLOSE])
 			weight_map[asset['name']] = asset['weight'] if  asset['weight'] != None else 1/len(config['asset'])
 
-		risk_free_rate = Risk_Free_Rate(reporting_currency)
+		risk_free_rate = RiskFreeRate(reporting_currency)
 		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,risk_free_rate_source)
 								
 		portfolio = Portfolio( df_map,
@@ -197,8 +197,8 @@ class Action():
 		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
 		self.filename = f"{self.args['ticker']}_{self.args['source']}"
 		
-		self.args['start_date'] = business_date()
-		self.args['end_date'] = business_date()
+		self.args['start_date'] = TimeHelper.business_date()
+		self.args['end_date'] = TimeHelper.business_date()
 
 		client = self._client()
 		options = client.fetch_options()
@@ -206,7 +206,7 @@ class Action():
 		spot_price = client.fetch_current_price()
 		ticker_currency = client.fetch_currency()
 		
-		risk_free_rate = Risk_Free_Rate(ticker_currency)
+		risk_free_rate = RiskFreeRate(ticker_currency)
 		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
 		r = risk_free_rate.value(risk_free_rate_price)
 		print(r)
@@ -215,9 +215,9 @@ class Action():
 		print(spot_price,r)
 		dividend = 0.0248 
 
-		vol = Volatility_Surface( self.args['ticker'],
+		vol = VolatilitySurface( self.args['ticker'],
 					 			  options, 
-					 			  change_date_formatting(self.args['start_date'],'','%d/%m/%Y'),
+					 			  TimeHelper.change_date_formatting(self.args['start_date'],'','%d/%m/%Y'),
 					 			  spot_price,
 					 			  r,
 					 			  dividend)
