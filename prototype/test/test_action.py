@@ -39,12 +39,12 @@ def test_price_BYS():
 	except Exception as e:
 		pytest.fail(f"Unexpected exception raised: {e}")
 
-def test_price_W():
+def test_price_BQE():
 	args = base_args.copy()
 	args['action'] = 'price'
 	args['ticker'] = 'SPX'
 	args['currency'] = 'EUR'
-	args['frequency'] = 'W'
+	args['frequency'] = 'BQE'
 	try:
 		Action(args)
 	except Exception as e:
