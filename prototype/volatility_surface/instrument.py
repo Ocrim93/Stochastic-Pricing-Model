@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 from prototype.instrument import days_in_year
+from prototype.measure import Measure as M
 from loguru import logger
 import time 
+import pandas as pd
 
 LIST_SYMBOL = ['F','G','H','J','K','M','N','Q','U','V','X','Z']
 
@@ -22,6 +24,19 @@ def expiration_in_year(date1 : datetime,
 	days = (date2 - date1).days
 
 	return days/days_in_year(convention)
+
+def build_dataframe( IV_dict : dict ):
+	df = pd.DataFrame()
+
+	for t_exp, data in IV_dict.items():
+		for strike,data_per_strike in data.items():
+			d = { k : [v] for k,v in data_per_strike.items()}
+			d[M.STRIKE] = [strike]
+			d[M.SETTLEMENT_DATE] = [t_exp]
+			temp_df  = pd.DataFrame(data=d)
+			df = pd.concat([df,temp_df], ignore_index = True)
+	df[M.SETTLEMENT_DATE] = pd.to_datetime(df[M.SETTLEMENT_DATE], format='%d/%m/%Y')
+	return df
 
 def timer(func):
 	def inner(*args, **kwargs):

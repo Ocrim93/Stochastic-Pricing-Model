@@ -47,10 +47,10 @@ class Yahoo_Client(Client):
 		logger.info(f'fetch financials for {self.ticker}')
 		return self.client.financials
 
-	def fetch_options(self) -> {}:
+	def fetch_options(self) -> {}:	
 		'''
 			***Yahoo source does not support historical option prices***
-
+			*** watch out dividend_yield
 			return dictionary
 			{Expiration_Date : (call_DataFrame, put_DataFrame)} 
 		'''
@@ -61,7 +61,6 @@ class Yahoo_Client(Client):
 			t_exp = change_date_formatting(d, "%Y-%m-%d", "%d/%m/%Y")
 			call_put['call'] = {t_exp :  formatting_data(options.calls, 'volatility_surface')}
 			call_put['put'] = { t_exp :  formatting_data(options.puts,'volatility_surface')}
-		
 		return call_put
 
 	def fetch_balancesheet(self):

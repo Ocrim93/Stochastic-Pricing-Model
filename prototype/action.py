@@ -84,18 +84,19 @@ class Action():
 								 **kwargs)
 
 	def price(self):
-		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
-		self.filename = f"{self.args['ticker']}_({self.args['currency']})_"+\
-						f"{self.args['start_date'].date()}_"+\
-						f"{self.args['end_date'].date()}_"+\
-						f"{self.args['frequency']}_{self.args['source']}"
-
 		if 'FX_' in self.args['ticker']:
 			self.args['ticker'] =  self.args['ticker'].split('_')[1]
 			self.args['currency'] = self.args['ticker'][3:]
 			FX_flag = True
 		else:
 			FX_flag = False
+			
+		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
+		self.filename = f"{self.args['ticker']}_({self.args['currency']})_"+\
+						f"{self.args['start_date'].date()}_"+\
+						f"{self.args['end_date'].date()}_"+\
+						f"{self.args['frequency']}_{self.args['source']}"
+
 		data = self._price(columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH,M.VOLUME], FX_flag = FX_flag)
 		
 		compute_pct_change(data, M.CLOSE, self.args['frequency'])
@@ -153,6 +154,7 @@ class Action():
 		target_portfolio_return = config['target_portfolio_return']
 
 		self.args['frequency'] = 'B'
+		reporting_currency = self.args['currency']
 
 		df_map = {}
 		weight_map = {}
@@ -166,7 +168,7 @@ class Action():
 			df_map[asset['name']] = self._price([M.CLOSE])
 			weight_map[asset['name']] = asset['weight'] if  asset['weight'] != None else 1/len(config['asset'])
 
-		risk_free_rate = Risk_Free_Rate(self.args['currency'])
+		risk_free_rate = Risk_Free_Rate(reporting_currency)
 		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,risk_free_rate_source)
 								
 		portfolio = Portfolio( df_map,
@@ -179,7 +181,7 @@ class Action():
 							   budget,
 							   budget_per_frequency)
 
-		self.filename = '_'.join(weight_map)
+		self.filename = f"{'_'.join(weight_map)}_({reporting_currency})"
 		self.folder_output = f'{self.base_folder_output}/{self.filename}'
 
 		if self.args['save'] : 
@@ -206,23 +208,30 @@ class Action():
 		
 		risk_free_rate = Risk_Free_Rate(ticker_currency)
 		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
-		
+		r = risk_free_rate.value(risk_free_rate_price)
+		print(r)
 		dividend = client.fetch_dividend_yield()
+		#r  =3.6970/100
+		print(spot_price,r)
+		dividend = 0.0248 
 
 		vol = Volatility_Surface( self.args['ticker'],
 					 			  options, 
 					 			  change_date_formatting(self.args['start_date'],'','%d/%m/%Y'),
 					 			  spot_price,
-					 			  risk_free_rate.value(risk_free_rate_price),
+					 			  r,
 					 			  dividend)
 		vol.run()
+		if self.args['save']:
+			for call_put in ['call', 'put']:
+				self.save_data(vol.IV_data[call_put], name = call_put)
 
-	def save_data(self,data, name: str = '' ):
+	def save_data(self,data , name: str = '' ):
 		create_folder(self.folder_output)
 		if data.empty:
-			logger.warning(f'not saved empty, {self.filename}_{name}')
+			logger.warning(f'empty data, not saved, {self.filename}_{name}')
 		else:
-			logger.info(f'saving data {self.filename}')
+			logger.info(f'saving data {self.filename} {name}')
 			data.to_csv(f'{self.folder_output}/{self.filename}_{name}.csv')
 
 	def save_plot(self,figure, extension = 'html', PLOT = False):

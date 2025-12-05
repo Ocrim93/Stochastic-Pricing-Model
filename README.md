@@ -67,8 +67,6 @@ Choice for ```action``` :
  Retrive and plot custom pairing, like SPX vs GOLD. 
  Syntax on the ticker paramter as ```SPX_GC```, using ```_``` delimeter.
 
-
-
 ### Frequency conventions
 
 | Symbol |  Description           |

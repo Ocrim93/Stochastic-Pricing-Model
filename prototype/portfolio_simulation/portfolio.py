@@ -44,6 +44,7 @@ class Portfolio	:
 		self.data.reset_index(inplace = True)
 
 	def efficient_frontier(self):
+		logger.info('compute capital market line')
 		df = log_pct_dataset(self.data.copy(), self.weight.columns)
 		cov = df.cov()/time_convention('trading' , 'B')
 		mean = df.mean()/time_convention('trading' , 'B')
