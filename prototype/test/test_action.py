@@ -33,7 +33,7 @@ def test_price_BYS():
 	args['action'] = 'price'
 	args['ticker'] = 'SX5E'
 	args['currency'] = 'EUR'
-	args['frequency'] = 'BMS'
+	args['frequency'] = 'BYS'
 	try:
 		Action(args)
 	except Exception as e:
