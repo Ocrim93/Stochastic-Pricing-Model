@@ -209,10 +209,8 @@ class Action():
 		risk_free_rate = RiskFreeRate(ticker_currency)
 		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
 		r = risk_free_rate.value(risk_free_rate_price)
-		print(r)
+
 		dividend = client.fetch_dividend_yield()
-		#r  =3.6970/100
-		print(spot_price,r)
 		dividend = 0.0248 
 
 		vol = VolatilitySurface( self.args['ticker'],

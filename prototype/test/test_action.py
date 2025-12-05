@@ -42,7 +42,7 @@ def test_price_BYS():
 def test_price_W():
 	args = base_args.copy()
 	args['action'] = 'price'
-	args['ticker'] = 'SX5E'
+	args['ticker'] = 'SPX'
 	args['currency'] = 'EUR'
 	args['frequency'] = 'W'
 	try:
