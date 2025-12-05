@@ -50,6 +50,17 @@ def test_price_BQE():
 	except Exception as e:
 		pytest.fail(f"Unexpected exception raised: {e}")
 
+def test_price_W():
+	args = base_args.copy()
+	args['action'] = 'price'
+	args['ticker'] = 'SPX'
+	args['currency'] = 'EUR'
+	args['frequency'] = 'W'
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
 def test_price_FX():
 	args = base_args.copy()
 	args['action'] = 'price'
