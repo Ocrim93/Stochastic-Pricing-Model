@@ -13,7 +13,7 @@ from prototype.measure import Measure
 from prototype.timeHelper  import TimeHelper 
 from prototype.source.clientBase import Client 
 
-class Yahoo_Client(Client):
+class YahooClient(Client):
 	def __init__(self,
 				 ticker : str,
 				 start_date : datetime,

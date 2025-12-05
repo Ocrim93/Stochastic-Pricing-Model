@@ -67,9 +67,13 @@ def build_pair_dataset(num_df : pd.DataFrame, den_df : pd.DataFrame):
 	return pair_df[[M.DATE,M.CLOSE]]
 
 def build_business_dates_dataset(start_date, end_date, freq = 'B') :
-	date_range = pd.date_range(start=start_date, end=end_date, freq = freq, tz = ZoneInfo(TimeHelper.TIME_ZONE))
+
+	date_range = pd.date_range(start=start_date, end=end_date, freq = (freq if 'W' not in freq else 'W'), tz = ZoneInfo(TimeHelper.TIME_ZONE))
 	date_range_df = pd.DataFrame(data = { M.DATE : date_range})
 	date_range_df[M.DATE] = date_range_df[M.DATE].apply(lambda x : x.date())
+	
+	if 'W' in freq: date_range_df[M.DATE] = TimeHelper.adjustementWeekFreq(date_range_df[M.DATE],freq)
+	
 	return date_range_df
 
 def check_missing_dates(dataset : pd.DataFrame, start_date : datetime, end_date : datetime, freq : str):

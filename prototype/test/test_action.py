@@ -55,7 +55,7 @@ def test_price_W():
 	args['action'] = 'price'
 	args['ticker'] = 'SPX'
 	args['currency'] = 'EUR'
-	args['frequency'] = 'W'
+	args['frequency'] = 'WS'
 	try:
 		Action(args)
 	except Exception as e:

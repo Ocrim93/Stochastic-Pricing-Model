@@ -72,7 +72,8 @@ Choice for ```action``` :
 | Symbol |  Description           |
 |:-----  |:----------------------:|
 | B      | Business date          |
-| W      | Weekly                 |
+| WE     | Weekly End             |
+| WS     | Weekly Start           |
 | BME    | Business month end     |
 | BMS    | Business month start   |
 | BQE    | Business quarter end   |

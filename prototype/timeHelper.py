@@ -49,6 +49,13 @@ class TimeHelper():
 			else : return 1
 
 	@staticmethod
+	def adjustementWeekFreq(date_array, frequency : str):
+		if frequency == 'WS':
+			return date_array.apply(lambda x : x + timedelta(days = 1))
+		if frequency == 'WE':
+			return date_array.apply(lambda x : x + timedelta(days = 5))
+
+	@staticmethod
 	def days_in_year(convention : str):
 		if convention == 'actual':
 			return 365

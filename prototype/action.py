@@ -3,7 +3,7 @@ from loguru import logger
 from .instrument import create_folder,cleaning_data,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset
 from .plotInstrument import Plot
 from .measure import Measure as M
-from .source.yahoo_finance.client import Yahoo_Client
+from .source.yahoo_finance.client import YahooClient
 from plotly.offline import  iplot
 from prototype.portfolio_simulation.portfolio import Portfolio
 from prototype.volatility_surface.volatilitySurface import VolatilitySurface
@@ -16,7 +16,7 @@ class Action():
 	@staticmethod
 	def get_client(ticker, start_date, end_date, source, FX_flag = False, **kwargs ):
 		if source == 'yahoo':
-			return Yahoo_Client( ticker, start_date , end_date, FX_flag, **kwargs)
+			return YahooClient( ticker, start_date , end_date, FX_flag, **kwargs)
 		logger.warning(f'no source found : {source}')
 
 	@staticmethod
