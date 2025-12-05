@@ -43,8 +43,8 @@ class Measure_map:
 				'currency' : Measure.CURRENCY
 				}
 
-class Yahoo_Ticker:
-	__io = 'prototype/source/yahoo_finance/yahoo_measure.csv'
+class YahooTicker:
+	__io = 'prototype/source/yahoo_finance/yahooMeasure_resources.csv'
 	__cache = {}
 
 	def __init__(self):
@@ -79,6 +79,6 @@ def map_from_formatting(key : str, measure :str = None ):
 def ticker_map(ticker):
 	t = defaultdict(lambda : ticker)
 
-	t.update(Yahoo_Ticker.load_or_get_cache())
+	t.update(YahooTicker.load_or_get_cache())
 	return t[ticker]
 			 

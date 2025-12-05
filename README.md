@@ -67,17 +67,16 @@ Choice for ```action``` :
  Retrive and plot custom pairing, like SPX vs GOLD. 
  Syntax on the ticker paramter as ```SPX_GC```, using ```_``` delimeter.
 
-
-
 ### Frequency conventions
 
 | Symbol |  Description           |
 |:-----  |:----------------------:|
 | B      | Business date          |
-| W      | Weekly                 |
+| WE     | Weekly End             |
+| WS     | Weekly Start           |
 | BME    | Business month end     |
-| BMS    | business month start   |
-| BQE    | business quarter end   |
-| BQS    | business quarter start |
-| BYE    | business year end      |
-| BYS    | business year start    |
+| BMS    | Business month start   |
+| BQE    | Business quarter end   |
+| BQS    | Business quarter start |
+| BYE    | Business year end      |
+| BYS    | Business year start    |

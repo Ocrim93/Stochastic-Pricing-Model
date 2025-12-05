@@ -12,7 +12,7 @@ def log_pct_dataset(data : pd.DataFrame, assets : list ):
 		log_pct_df[asset] = log_pct_df[asset].dropna()
 	return log_pct_df
 
-class Efficient_Frontier():
+class EfficientFrontier():
 
 	@staticmethod
 	def portfolio_stats(weights : np.array, mu : np.array, cov : pd.DataFrame ):
@@ -33,7 +33,7 @@ class Efficient_Frontier():
 		bounds = tuple((-1,1) for _ in range(n))
 
 		result = minimize(
-					lambda w : Efficient_Frontier.portfolio_stats(w,mu,cov)[1],
+					lambda w : EfficientFrontier.portfolio_stats(w,mu,cov)[1],
 					init_w,
 					method = "SLSQP",
 					bounds = bounds,
@@ -55,9 +55,9 @@ class Efficient_Frontier():
 
 	def run(self):
 		for r in self.target_return:
-			result = Efficient_Frontier.minimize_vol(r,self.mu,self.cov)
+			result = EfficientFrontier.minimize_vol(r,self.mu,self.cov)
 			if result.success:
-				portfolio_return,portfolio_vol = Efficient_Frontier.portfolio_stats(result.x,self.mu,self.cov)
+				portfolio_return,portfolio_vol = EfficientFrontier.portfolio_stats(result.x,self.mu,self.cov)
 				self.data.loc[len(self.data)] = [portfolio_return,portfolio_vol] + list(result.x)
 			else:
 				logger.warning(f' scipy.optimize.minimize failed for target {r}')

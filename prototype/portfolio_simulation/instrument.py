@@ -3,7 +3,8 @@ from prototype.measure import Measure as M
 from loguru import logger
 from  datetime import datetime 
 import numpy as np
-from prototype.instrument import compute_volatility_log_pct,days_in_year
+from prototype.instrument import compute_volatility_log_pct
+from prototype.timeHelper import TimeHelper 
 import math 
 
 
@@ -62,6 +63,6 @@ def adding_pnl(data : pd.DataFrame, quantity_df : pd.DataFrame):
 def compute_sharpe_ratio(data : pd.DataFrame, risk_free_rate : float):
 	vol = compute_volatility_log_pct(data.copy(), M.INDEX, 'B', 'trading')
 
-	rate_of_return = math.pow(data.iloc[-1][M.BALANCE]/data.iloc[-1][M.CASH],days_in_year('trading')/len(data)) -1 
+	rate_of_return = math.pow(data.iloc[-1][M.BALANCE]/data.iloc[-1][M.CASH],TimeHelper.days_in_year('trading')/len(data)) -1 
 	return rate_of_return,vol,(rate_of_return - risk_free_rate )/vol
 

@@ -59,12 +59,12 @@ class AnalyticsForward(Analytics):
 		return vega*math.exp(-r*T)
 
 	@staticmethod 
-	def BSDeltaCall(S,K,sigma,r,T):
+	def BSDeltaCall(S,K,sigma,r,T,*args):
 		delta = Analytics.BSDeltaCall(F,K,sigma,0,T,0)
 		return delta*math.exp(-r*T)
 
 	@staticmethod 
-	def BSDeltaPut(S,K,sigma,r,T):
+	def BSDeltaPut(S,K,sigma,r,T,*args):
 		delta = Analytics.BSDeltaPut(F,K,sigma,0,T,0)
 		return delta*math.exp(-r*T)
 
