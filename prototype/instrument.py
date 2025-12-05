@@ -68,7 +68,7 @@ def build_pair_dataset(num_df : pd.DataFrame, den_df : pd.DataFrame):
 
 def build_business_dates_dataset(start_date, end_date, freq = 'B') :
 
-	date_range = pd.date_range(start=start_date, end=end_date, freq = (freq if 'W' not in freq else 'W'), tz = ZoneInfo(TimeHelper.TIME_ZONE))
+	date_range = pd.bdate_range(start=start_date, end=end_date, freq = (freq if 'W' not in freq else 'W'), tz = ZoneInfo(TimeHelper.TIME_ZONE))
 	date_range_df = pd.DataFrame(data = { M.DATE : date_range})
 	date_range_df[M.DATE] = date_range_df[M.DATE].apply(lambda x : x.date())
 	
