@@ -11,9 +11,9 @@ base_args = {'action' : None,
 		'currency' : None,
 		'frequency' : None,
 		'source' : 'yahoo',
-		'output' : None,
+		'output' : 'prototype/test/Output',
 		'portfolio_io' : 'prototype/test/test_portfolio_settings.yaml',
-		'save' : False,
+		'save' : True,
 		'plot' : False 
 		}
 

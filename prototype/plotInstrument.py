@@ -48,6 +48,11 @@ class Plot:
 		asset_fig = adding_vertical_line(asset_fig,starting_strategy_date,'starting')
 
 		return asset_fig, pnl_fig
+
+	@staticmethod
+	def volatility_surface(data : pd.DataFrame, filename : str ):
+		fig_title = ' '.join(filename.split('_'))
+		
 	
 	def __init__(self):
 		pass

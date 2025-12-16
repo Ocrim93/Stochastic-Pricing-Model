@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 from .measure import Measure as M
 
 
-colors = ['#1F77B4']
+colors = []
 
 class GRAPH():
 	font_family="Courier New"
@@ -17,17 +17,26 @@ class GRAPH():
 	title_font_size = 20
 	legend_title_font_color="green"
 
+def is_light_color(hex_color, threshold=200):
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    # Perceived luminance formula
+    luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    return luminance > threshold
+
 def generator_colour():
 	global colors
 	
 	color =  '#' + ''.join([random.choice('ABCDEF0123456789') for i in range(6)]) 
-	if color in colors:
+	if color in colors and is_light_color(color):
 		generator_colour()
 	else:
 		colors.append(color)	
 		return color 
 
-def setting_layout(figure,title,x_axis,y_axis):
+def setting_layout(figure,title,x_axis,y_axis,x_axis_type = 'date'):
 
 	figure.update_layout(
 		    font_family= GRAPH.font_family,
@@ -37,8 +46,8 @@ def setting_layout(figure,title,x_axis,y_axis):
 		    legend_title_font_color=GRAPH.legend_title_font_color,
 		    title=dict(text=title , font=dict(size=GRAPH.title_font_size), yref='paper'),
 		    xaxis_title=x_axis ,
-		    xaxis=dict(type='date'),
-    		yaxis_title=y_axis
+		    xaxis=dict(type= x_axis_type),
+    		yaxis_title= y_axis
     )
 
 	return figure
@@ -46,9 +55,11 @@ def setting_layout(figure,title,x_axis,y_axis):
 def create_figure( data, 
 				   title,
 				   x_axis,
-				   y_axis):
+				   y_axis,
+				   mode = 'lines',
+				   color = generator_colour()):
 	
-	figure = Figure(Scatter(x=data[x_axis], y=data[y_axis],mode='lines', line = {'color' : generator_colour()}))
+	figure = Figure(Scatter(x=data[x_axis], y=data[y_axis],mode= mode, line = {'color' : color}))
 	figure = setting_layout(figure,title,x_axis,y_axis )
 	
 	return figure	
@@ -92,27 +103,29 @@ def create_multiple_axes_figure(data,
 	return fig
 
 def adding_horizontal_line(figure, value , name ):
-	color = generator_colour() 
+	color = generator_colour()
 	figure.add_hline(y=value, annotation_text= name, 
 		              annotation_position="bottom right",
 		              annotation_font_size=13,
-		              annotation_font_color=color ,line= {'color' :color })
+		              annotation_font_color=color ,line= {'color' : color })
 	return figure
 
 def adding_vertical_line(figure, value, name):
-	color = generator_colour() 
+	color = generator_colour()
 	figure.add_vline(x=value, annotation_text=name, 
 		              annotation_position="bottom right",
 		              annotation_font_size=13,
-		              annotation_font_color=color ,line= {'color' :color })
+		              annotation_font_color=color ,line= {'color' : color  })
 	return figure
 
 def adding_line(figure,
 				data, 
 				name,
 				x_axis,
-				y_axis  ):
-	color = generator_colour()
+				y_axis,
+				mode = 'lines',
+				color =  generator_colour() ):
+
 	# check we need to add two lines same colour
 	figure.add_trace(Scatter(x=data[x_axis], y=data[y_axis], mode='lines', name = name, line = {'color' : color}))
 	return figure	
