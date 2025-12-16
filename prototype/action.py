@@ -7,9 +7,9 @@ from .source.yahoo_finance.client import YahooClient
 from plotly.offline import  iplot
 from prototype.portfolio_simulation.portfolio import Portfolio
 from prototype.volatility_surface.volatilitySurface import VolatilitySurface
-from .interestRate import RiskFreeRate
-import yaml
+from .interestRate import RiskFreeRate, Treasury
 from .timeHelper import  TimeHelper 
+import yaml
 
 class Action():
 
@@ -194,12 +194,13 @@ class Action():
 
 
 	def volatility_surface(self):
-		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
-		self.filename = f"{self.args['ticker']}_{self.args['source']}"
 		
 		self.args['start_date'] = TimeHelper.business_date()
 		self.args['end_date'] = TimeHelper.business_date()
 
+		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}/{self.args["start_date"].date()}'
+		self.filename = f"{self.args['ticker']}_{self.args['source']}"
+		
 		client = self._client()
 		options = client.fetch_options()
 		
@@ -210,18 +211,21 @@ class Action():
 		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
 		r = risk_free_rate.value(risk_free_rate_price)
 
-		dividend = client.fetch_dividend_yield()
-		dividend = 0.0248 
+		risk_free_rate = Treasury(ticker_currency)
+		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
+		r = risk_free_rate.value(risk_free_rate_price)
 
+		dividend = client.fetch_dividend_yield()
+		
 		vol = VolatilitySurface( self.args['ticker'],
-					 			  options, 
-					 			  TimeHelper.change_date_formatting(self.args['start_date'],'','%d/%m/%Y'),
-					 			  spot_price,
-					 			  r,
-					 			  dividend)
+					 			 options, 
+					 			 TimeHelper.change_date_formatting(self.args['start_date'],'','%d/%m/%Y'),
+					 			 spot_price,
+					 			 r,
+					 			 dividend)
 		vol.run()
 		if self.args['save']:
-			for call_put in ['call', 'put']:
+			for call_put in vol.IV_data:
 				self.save_data(vol.IV_data[call_put], name = call_put)
 
 	def save_data(self,data , name: str = '' ):

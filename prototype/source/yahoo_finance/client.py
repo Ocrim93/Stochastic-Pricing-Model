@@ -84,8 +84,8 @@ class YahooClient(Client):
 	def fetch_dividend_yield(self) -> float:
 		try :
 			dividend = self.client.info[map_from_formatting('info',Measure.DIVIDEND_YIELD)]
-			logger.info(f'fetch {self.ticker} dividend yield {dividend}')
-			return dividend
+			logger.info(f'fetch {self.ticker} dividend yield {dividend} %')
+			return dividend/100
 		except :
 			logger.warning(f'{self.ticker} dividendYield not found')
 			return 0
