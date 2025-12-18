@@ -1,4 +1,4 @@
-budget_per_frequency: 1000
+budget_per_frequency: 1500
 budget: 
 frequency: "BMS"
 risk_free_rate_source : "yahoo"
@@ -6,7 +6,7 @@ target_portfolio_return :
 
 asset:
   - name: "SPX"
-    weight: 0
+    weight: 0.33
     source: "yahoo"
 
   - name: "SX5E"
@@ -26,7 +26,7 @@ asset:
     source: "yahoo"
 
   - name: "NASDAQ100"
-    weight: 0.33
+    weight: 0
     source: "yahoo"
 
   - name: "SI"

@@ -2189,6 +2189,21 @@ files = [
 ]
 
 [[package]]
+name = "ondemand"
+version = "1.1.1"
+description = "Simple client for Barchart OnDemand REST APIs"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "ondemand-1.1.1-py3-none-any.whl", hash = "sha256:09de3ab777f96057298e0be06d50627ca8ed0721ceb8a677f6b894054cdc7520"},
+    {file = "ondemand-1.1.1.tar.gz", hash = "sha256:81711ed63c29e2e556edd4238ab4fa76d3bd29b99b81a82b358d4fc45be74c28"},
+]
+
+[package.dependencies]
+requests = ">=2.3.0"
+
+[[package]]
 name = "overrides"
 version = "7.7.0"
 description = "A decorator to automatically detect mismatch when overriding a method."
@@ -4098,4 +4113,4 @@ repair = ["scipy (>=1.6.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "ac4a68a335694a8e4a56e0b2019355d6c66afbc6d84a1367fad9d55f70f464a2"
+content-hash = "d6ab6b0355dd8be7af4252fe675c412d2e04c93a4ced987dc37f014c89580575"

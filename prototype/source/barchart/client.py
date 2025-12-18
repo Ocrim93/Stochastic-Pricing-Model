@@ -1,19 +1,21 @@
 """
-	***Yahoo source does not support historical option prices***
+	***BarChart source does not support historical option prices***
 """
-
-import sys
-from datetime import datetime
-import pandas as pd 
+import os
 from loguru import logger 
-import yfinance as yf
-from .instrument import formatting_data, get_ticker,set_date_boundaries
-from .yahooMeasure import map_to_formating,map_from_formatting
-from prototype.measure import Measure
-from prototype.timeHelper  import TimeHelper 
-from prototype.source.clientBase import Client 
+import ondemand
 
-class YahooClient(Client):
+#import sys
+#from datetime import datetime
+#import pandas as pd 
+
+#from .instrument import formatting_data, get_ticker,set_date_boundaries
+#from .yahooMeasure import map_to_formating,map_from_formatting
+#from prototype.measure import Measure
+#from prototype.timeHelper  import TimeHelper 
+#from prototype.source.clientBase import Client 
+
+class BarChartClient(Client):
 	def __init__(self,
 				 ticker : str,
 				 start_date : datetime,
@@ -25,13 +27,13 @@ class YahooClient(Client):
 		self.start_date = start_date
 		self.end_date = end_date if start_date != end_date else None
 		self.period = period
-		logger.info(f'creating yahoo client {self.start_date.date()} {self.end_date }')
-		yahoo_ticker = get_ticker(ticker,FX_flag)
+		logger.info(f'creating barchart client {self.start_date.date()} {self.end_date }')
+		barchart_ticker = get_ticker(ticker,FX_flag)
 		try:
-			self.client = yf.Ticker(yahoo_ticker)
+			self.client = ondemand.OnDemandClient(api_key=os.environ['BARCHART_API'])
 		except Exception as e:
 			logger.error(f'client error occured, {e}')
-			sys.exit(f'{e} - {yahoo_ticker}')
+			sys.exit(f'{e} - {barchart_ticker}')
 
 	def fetch_price(self) -> pd.DataFrame:
 		logger.info(f"fetch {self.ticker} prices, period {self.period}")
