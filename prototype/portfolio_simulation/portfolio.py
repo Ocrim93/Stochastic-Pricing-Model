@@ -15,7 +15,6 @@ class Portfolio	:
 				  end_date : dt.datetime,
 				  frequency : str, 
 				  risk_free_rate : float,
-				  target_portfolio_return : float = 0.2,
 				  budget : float = 0 ,
 				  budget_per_frequency : float = 0
 				  ):
@@ -48,7 +47,7 @@ class Portfolio	:
 		df = log_pct_dataset(self.data.copy(), self.weight.columns)
 		cov = df.cov()/TimeHelper.time_conversion('trading', 'B')
 		mean = df.mean()/TimeHelper.time_conversion('trading','B')
-		eff_front = EfficientFrontier(self.target_portfolio_return,cov,mean,list(self.weight.columns))
+		eff_front = EfficientFrontier(mean,cov,list(self.weight.columns))
 		eff_front.run()
 
 		self.efficient_frontier_data = eff_front.data

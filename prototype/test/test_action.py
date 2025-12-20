@@ -71,7 +71,17 @@ def test_price_FX():
 	except Exception as e:
 		pytest.fail(f"Unexpected exception raised: {e}")
 
-def test_portfolio():
+def test_portfolio_EUR_currency():
+	args = base_args.copy()
+	args['action'] = 'portfolio'
+	args['currency'] = 'EUR'
+
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
+def test_portfolio_GBP_currency():
 	args = base_args.copy()
 	args['action'] = 'portfolio'
 	args['currency'] = 'EUR'

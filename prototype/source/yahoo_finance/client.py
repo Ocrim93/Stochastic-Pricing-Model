@@ -1,5 +1,7 @@
 """
 	***Yahoo source does not support historical option prices***
+	Limitation:
+		overnight references rate not available: SONIA and TONAR 
 """
 
 import sys

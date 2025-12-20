@@ -2,7 +2,6 @@ budget_per_frequency: 1000
 budget: 
 frequency: "BMS"
 risk_free_rate_source : "yahoo"
-target_portfolio_return :
 
 asset:
   - name: "SPX"

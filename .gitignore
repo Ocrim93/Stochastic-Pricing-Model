@@ -5,8 +5,10 @@
 Output/
 
 note.txt
+prototype/protportfolio_settings.yaml
+prototype/proto_notebook.ipynb
 
-Prototype/.ipynb_checkpoints/
+prototype/.ipynb_checkpoints/
 # Compiled Object files
 *.slo
 *.lo
