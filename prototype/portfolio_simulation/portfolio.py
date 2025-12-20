@@ -24,7 +24,6 @@ class Portfolio	:
 		self.base = 1 
 		self.frequency = frequency
 		self.risk_free_rate = risk_free_rate
-		self.target_portfolio_return = target_portfolio_return
 		self.rate_of_return,self.volatility,self.sharpe_ratio = 0,0,0
 		
 		rebalancing_dates(start_date, end_date, frequency, self.data)
