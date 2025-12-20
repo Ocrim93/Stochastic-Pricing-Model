@@ -151,7 +151,6 @@ class Action():
 		budget_per_frequency = config['budget_per_frequency'] or 0
 		risk_free_rate_source = config['risk_free_rate_source']
 		frequency = config['frequency'] 
-		target_portfolio_return = config['target_portfolio_return']
 
 		self.args['frequency'] = 'B'
 		reporting_currency = self.args['currency']
@@ -177,7 +176,6 @@ class Action():
 							   self.args['end_date'],
 							   frequency,
 							   risk_free_rate.value(risk_free_rate_price),
-							   target_portfolio_return,
 							   budget,
 							   budget_per_frequency)
 

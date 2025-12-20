@@ -30,7 +30,6 @@ p = Portfolio(  df_map,
 				datetime(2020,1,9).date(),
 				'BME',
 				0.03,
-				0.1,
 				0,
 				100)
 
