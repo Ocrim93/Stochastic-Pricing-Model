@@ -1,7 +1,7 @@
 from __future__ import annotations
 from loguru import logger
 from .instrument import create_folder,cleaning_data,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset
-from .plotInstrument import Plot
+from .plotHelper import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import YahooClient
 from plotly.offline import  iplot
@@ -98,7 +98,6 @@ class Action():
 						f"{self.args['frequency']}_{self.args['source']}"
 
 		data = self._price(columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH,M.VOLUME], FX_flag = FX_flag)
-		
 		compute_pct_change(data, M.CLOSE, self.args['frequency'])
 
 		if self.args['save']:
