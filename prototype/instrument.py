@@ -82,14 +82,13 @@ def check_missing_dates(dataset : pd.DataFrame, start_date : datetime, end_date 
 	dataset[M.DATE] = dataset[M.DATE].apply(lambda x : x.date())
 
 	dataset.sort_values(by = M.DATE, ignore_index=True, ascending = True, inplace = True)
-
 	date_range_df = build_business_dates_dataset(start_date, end_date, freq)
 	missing_dates = date_range_df[~date_range_df[M.DATE].isin(dataset[M.DATE].to_list()) ]
 	#check that two datasets have the same length 
 	if not missing_dates.empty:
 		logger.warning(f'missing date, n {len(missing_dates)}')
 		print(missing_dates)
-	merged = date_range_df.merge(dataset, how = 'left', on = M.DATE)
+	merged = date_range_df.merge(dataset, how = 'outer', on = M.DATE)
 	merged['freq_date'] = np.where(merged[M.DATE].isin(date_range_df[M.DATE].to_list()),True,False)
 	return merged
 

@@ -12,8 +12,9 @@ class Plot:
 	
 		price_fig = create_candlestick(data,f"{fig_title}",M.DATE, M.CLOSE)
 		price_fig = adding_line(price_fig, data, M.CLOSE, M.DATE,M.CLOSE)
-	
-		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT)
+
+		data[M.LOG_PCT] = 100*data[M.LOG_PCT]
+		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT,bar_flag = True)
 
 		return price_fig,pct_fig
 
