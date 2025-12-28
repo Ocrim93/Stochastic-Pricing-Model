@@ -24,7 +24,7 @@ class EsterClient(Client):
 
 	def fetch_price(self):
 		data = self.client.json()
-		df = build_datafrane(data)
+		df = build_dataframe(data)
 		logger.info(f'fetch €STER, n. records {len(df)}' )
 		self.data = df 
 		return df

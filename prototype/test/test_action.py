@@ -71,6 +71,28 @@ def test_price_FX():
 	except Exception as e:
 		pytest.fail(f"Unexpected exception raised: {e}")
 
+def test_price_SOFR_fred():
+	args = base_args.copy()
+	args['action'] = 'price'
+	args['ticker'] = 'SOFR'
+	args['frequency'] = 'B'
+	args['source'] = 'fred'
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
+def test_price_SOFR_ECB():
+	args = base_args.copy()
+	args['action'] = 'price'
+	args['ticker'] = 'ESTER'
+	args['frequency'] = 'B'
+	args['source'] = 'ECB'
+	try:
+		Action(args)
+	except Exception as e:
+		pytest.fail(f"Unexpected exception raised: {e}")
+
 def test_portfolio_EUR_currency():
 	args = base_args.copy()
 	args['action'] = 'portfolio'

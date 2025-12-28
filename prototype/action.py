@@ -5,6 +5,7 @@ from .plotHelper import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import YahooClient
 from .source.fred.client import FREDClient
+from .source.ECB.client import EsterClient
 from plotly.offline import  iplot
 from prototype.portfolio_simulation.portfolio import Portfolio
 from prototype.volatility_surface.volatilitySurface import VolatilitySurface
@@ -18,9 +19,11 @@ class Action():
 	@staticmethod
 	def get_client(ticker, start_date, end_date, source, FX_flag = False, **kwargs ):
 		if source == 'yahoo':
-			return YahooClient( ticker, start_date , end_date, FX_flag, **kwargs)
+			return YahooClient(ticker, start_date , end_date, FX_flag, **kwargs)
 		if source == 'fred' :
-			return FREDClient( ticker)
+			return FREDClient(ticker)
+		if source == 'ECB' :
+			return EsterClient()
 		logger.warning(f'no source found : {source}')
 
 	@staticmethod
