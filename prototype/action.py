@@ -1,14 +1,17 @@
 from __future__ import annotations
 from loguru import logger
-from .instrument import create_folder,cleaning_data,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset
-from .plotInstrument import Plot
+from .instrument import create_folder,cleaning_data,build_business_dates_dataset,applying_fx_spot,compute_pct_change,build_pair_dataset, is_interest_rate
+from .plotHelper import Plot
 from .measure import Measure as M
 from .source.yahoo_finance.client import YahooClient
+from .source.fred.client import FREDClient
+from .source.ECB.client import EsterClient
 from plotly.offline import  iplot
 from prototype.portfolio_simulation.portfolio import Portfolio
 from prototype.volatility_surface.volatilitySurface import VolatilitySurface
 from .interestRate import RiskFreeRate, Treasury
 from .timeHelper import  TimeHelper 
+from .filenameHelper import FileName
 import yaml
 
 class Action():
@@ -16,7 +19,11 @@ class Action():
 	@staticmethod
 	def get_client(ticker, start_date, end_date, source, FX_flag = False, **kwargs ):
 		if source == 'yahoo':
-			return YahooClient( ticker, start_date , end_date, FX_flag, **kwargs)
+			return YahooClient(ticker, start_date , end_date, FX_flag, **kwargs)
+		if source == 'fred' :
+			return FREDClient(ticker)
+		if source == 'ECB' :
+			return EsterClient()
 		logger.warning(f'no source found : {source}')
 
 	@staticmethod
@@ -40,8 +47,9 @@ class Action():
 
 		data = client.fetch_price()
 		ticker_currency = client.fetch_currency()
+		columns = [ col for col in data.columns if col in columns ]
 
-		if ticker_currency != reporting_currency:
+		if ticker_currency != reporting_currency and not is_interest_rate(ticker):
 			fx_df = Action.get_client(f"{ticker_currency}{reporting_currency}",
 										start_date,
 										end_date,
@@ -50,7 +58,8 @@ class Action():
 
 		logger.info(f'start cleaning data for {ticker}')
 		data = cleaning_data(data, start_date, end_date, columns = columns, frequency=frequency)
-		if ticker_currency != reporting_currency:
+		
+		if ticker_currency != reporting_currency and not is_interest_rate(ticker):
 			logger.info(f'start cleaning data for FX_SPOT')
 			fx_df = cleaning_data(fx_df, start_date, end_date, columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH], drop_columns = [M.VOLUME], frequency = frequency)
 			data = applying_fx_spot(data, fx_df, columns = [col for col in columns if col != M.VOLUME])
@@ -90,30 +99,35 @@ class Action():
 			FX_flag = True
 		else:
 			FX_flag = False
-			
-		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
-		self.filename = f"{self.args['ticker']}_({self.args['currency']})_"+\
-						f"{self.args['start_date'].date()}_"+\
-						f"{self.args['end_date'].date()}_"+\
-						f"{self.args['frequency']}_{self.args['source']}"
+		
+		is_interest_rate_flag = is_interest_rate(self.args["ticker"])
+
+		self.folder_output,self.filename  = FileName.price(self.base_folder_output
+														   ,self.args["ticker"]
+														   ,self.args['currency']
+														   ,str(self.args['start_date'].date())
+														   ,str(self.args['end_date'].date())
+														   ,self.args['frequency']
+														   ,self.args['source']
+														   ,is_interest_rate_flag)
 
 		data = self._price(columns = [M.CLOSE,M.OPEN,M.LOW,M.HIGH,M.VOLUME], FX_flag = FX_flag)
-		
 		compute_pct_change(data, M.CLOSE, self.args['frequency'])
 
 		if self.args['save']:
-			price_fig,pct_fig =  Plot.price(data,self.filename) 
+			price_fig,pct_fig =  Plot.price(data,self.filename,is_interest_rate_flag ) 
 			
 			self.save_data(data)
 			self.save_plot(price_fig, PLOT=self.args['plot'])
 			self.save_plot(pct_fig, PLOT=self.args['plot'])
 
 	def pair(self):
-		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}'
-		self.filename = f"{self.args['ticker']}_"+\
-						f"{self.args['start_date'].date()}_"+\
-						f"{self.args['end_date'].date()}_"+\
-						f"{self.args['frequency']}_{self.args['source']}"
+		self.folder_output,self.filename  = FileName.pair(self.base_folder_output
+													       ,self.args["ticker"]
+													       ,str(self.args['start_date'].date())
+													       ,str(self.args['end_date'].date())
+													       ,self.args['frequency']
+													       ,self.args['source'])
 
 		asset_num = self.args['ticker'].split('-')[0]
 		asset_den = self.args['ticker'].split('-')[1]
@@ -149,7 +163,6 @@ class Action():
 			config = yaml.safe_load(file)
 		budget = config['budget'] or 0
 		budget_per_frequency = config['budget_per_frequency'] or 0
-		risk_free_rate_source = config['risk_free_rate_source']
 		frequency = config['frequency'] 
 
 		self.args['frequency'] = 'B'
@@ -168,7 +181,7 @@ class Action():
 			weight_map[asset['name']] = asset['weight'] if  asset['weight'] != None else 1/len(config['asset'])
 
 		risk_free_rate = RiskFreeRate(reporting_currency)
-		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,risk_free_rate_source)
+		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,'fred')
 								
 		portfolio = Portfolio( df_map,
 							   weight_map,
@@ -179,8 +192,11 @@ class Action():
 							   budget,
 							   budget_per_frequency)
 
-		self.filename = f"{'_'.join(weight_map)}_({reporting_currency})"
-		self.folder_output = f'{self.base_folder_output}/{self.filename}'
+		self.folder_output,self.filename =FileName.portfolio(self.base_folder_output
+			  	  											,weight_map
+			  	  											,reporting_currency
+			  	  											,str(self.args['start_date'].date())
+													        ,str(self.args['end_date'].date()))
 
 		if self.args['save'] : 
 			self.save_data(portfolio.data)
@@ -196,8 +212,10 @@ class Action():
 		self.args['start_date'] = TimeHelper.business_date()
 		self.args['end_date'] = TimeHelper.business_date()
 
-		self.folder_output = f'{self.base_folder_output}/{self.args["ticker"]}/{self.args["start_date"].date()}'
-		self.filename = f"{self.args['ticker']}_{self.args['source']}"
+		self.folder_output,self.filename =FileName.volatility_surface(self.base_folder_output
+			  	  													  ,self.args["ticker"]
+			  	  													  ,str(self.args['start_date'].date())
+			  	  													  ,self.args['source'])
 		
 		client = self._client()
 		options = client.fetch_options()
@@ -206,11 +224,7 @@ class Action():
 		ticker_currency = client.fetch_currency()
 		
 		risk_free_rate = RiskFreeRate(ticker_currency)
-		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
-		r = risk_free_rate.value(risk_free_rate_price)
-
-		risk_free_rate = Treasury(ticker_currency)
-		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,self.args['source'])
+		risk_free_rate_price =  Action.get_current_price(risk_free_rate.name,'fred')
 		r = risk_free_rate.value(risk_free_rate_price)
 
 		dividend = client.fetch_dividend_yield()

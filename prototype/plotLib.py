@@ -1,5 +1,4 @@
 from plotly.graph_objs import Figure, Scatter, Candlestick, Bar
-import plotly.io as pio 
 import random
 from typing import Union
 import plotly.express as px
@@ -57,10 +56,15 @@ def create_figure( data,
 				   x_axis,
 				   y_axis,
 				   mode = 'lines',
-				   color = generator_colour()):
+				   color = generator_colour(),
+				   bar_flag = False):
 	
-	figure = Figure(Scatter(x=data[x_axis], y=data[y_axis],mode= mode, line = {'color' : color}))
-	figure = setting_layout(figure,title,x_axis,y_axis )
+	if bar_flag:
+		color_legend = ['green' if v > 0 else 'red' for v in data[y_axis]   ]
+		figure = Figure(Bar(x=data[x_axis], y=data[y_axis],marker_color = color_legend ))
+	else:
+		figure = Figure(Scatter(x=data[x_axis], y=data[y_axis],mode= mode, line = {'color' : color}))
+	figure = setting_layout(figure,title,x_axis,y_axis)
 	
 	return figure	
 

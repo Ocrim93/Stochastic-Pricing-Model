@@ -17,7 +17,8 @@ def retrieve_ticker_from_csv():
 	Measure_io =  "prototype/input/Measure.csv"
 	map_attribute = {'Index' :  "prototype/input/ticker/Index.csv",
 					 'Equity' : "prototype/input/ticker/Equity.csv",
-					 'InterestRate' : "prototype/input/ticker/InterestRate.csv"}
+					 'InterestRate' : "prototype/input/ticker/InterestRate.csv",
+					 'Commodity' : "prototype/input/ticker/Commodity.csv"}
 
 	for asset_class, path_file in map_attribute.items():
 		Ticker(path_file,asset_class)
@@ -82,14 +83,13 @@ def check_missing_dates(dataset : pd.DataFrame, start_date : datetime, end_date 
 	dataset[M.DATE] = dataset[M.DATE].apply(lambda x : x.date())
 
 	dataset.sort_values(by = M.DATE, ignore_index=True, ascending = True, inplace = True)
-
 	date_range_df = build_business_dates_dataset(start_date, end_date, freq)
 	missing_dates = date_range_df[~date_range_df[M.DATE].isin(dataset[M.DATE].to_list()) ]
 	#check that two datasets have the same length 
 	if not missing_dates.empty:
 		logger.warning(f'missing date, n {len(missing_dates)}')
 		print(missing_dates)
-	merged = date_range_df.merge(dataset, how = 'left', on = M.DATE)
+	merged = date_range_df.merge(dataset, how = 'outer', on = M.DATE)
 	merged['freq_date'] = np.where(merged[M.DATE].isin(date_range_df[M.DATE].to_list()),True,False)
 	return merged
 
@@ -106,4 +106,10 @@ def cleaning_data(data: pd.DataFrame, start_date : datetime, end_date : datetime
 	
 	logger.info(f'cleaning completed, n. records: {len(df)}')
 	return df
+
+def is_interest_rate(ticker : str):
+	if ticker in Ticker.assetClassMap:
+		return  Ticker.assetClassMap[ticker] == 'InterestRate'
+	else: return  False
+
 

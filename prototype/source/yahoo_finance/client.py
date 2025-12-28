@@ -3,7 +3,6 @@
 	Limitation:
 		overnight references rate not available: SONIA and TONAR 
 """
-
 import sys
 from datetime import datetime
 import pandas as pd 
@@ -79,7 +78,11 @@ class YahooClient(Client):
 		return closing_price
 
 	def fetch_currency(self) -> str :
-		currency = self.client.info[map_from_formatting('info',Measure.CURRENCY)]
+		currency = 'USD'
+		try : 
+			currency = self.client.info[map_from_formatting('info',Measure.CURRENCY)]
+		except:
+			logger.warning('no currency found')
 		logger.info(f'fetch {self.ticker} currency {currency}')
 		return currency
 
