@@ -1,6 +1,8 @@
 """Module to retrieve 
+	Interest rate
 	risk free rate
 """
+
 
 class InterestRate():
 	def __init__(self, currency):
@@ -56,5 +58,3 @@ class RiskFreeRate(InterestRate):
 	def convention(self):
 		return 'ACT/360'
 		
-	def _value(self,value):
-		return (100 - value)/100 

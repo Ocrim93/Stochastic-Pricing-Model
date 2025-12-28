@@ -7,14 +7,17 @@ from datetime import datetime
 class Plot:
 
 	@staticmethod
-	def price(data : pd.DataFrame, filename : str):
+	def price(data : pd.DataFrame, filename : str, is_interest_rate_flag : bool):
 		fig_title = ' '.join(filename.split('_'))
-	
-		price_fig = create_candlestick(data,f"{fig_title}",M.DATE, M.CLOSE)
+		
+		if is_interest_rate_flag:
+			price_fig = create_figure(data,f"{fig_title}",M.DATE, M.CLOSE)
+		else:
+			price_fig = create_candlestick(data,f"{fig_title}",M.DATE, M.CLOSE)
 		price_fig = adding_line(price_fig, data, M.CLOSE, M.DATE,M.CLOSE)
 
 		data[M.LOG_PCT] = 100*data[M.LOG_PCT]
-		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT,bar_flag = True)
+		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT, bar_flag = True)
 
 		return price_fig,pct_fig
 
@@ -23,8 +26,10 @@ class Plot:
 		fig_title = ' '.join(filename.split('_'))
 	
 		price_fig = create_figure(data,f"{fig_title}",M.DATE, M.CLOSE)
-	
-		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT)
+		
+		data[M.LOG_PCT] = 100*data[M.LOG_PCT]
+		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT, bar_flag = True)
+		#pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT)
 
 		return price_fig,pct_fig
 	

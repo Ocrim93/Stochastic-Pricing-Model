@@ -17,7 +17,8 @@ def retrieve_ticker_from_csv():
 	Measure_io =  "prototype/input/Measure.csv"
 	map_attribute = {'Index' :  "prototype/input/ticker/Index.csv",
 					 'Equity' : "prototype/input/ticker/Equity.csv",
-					 'InterestRate' : "prototype/input/ticker/InterestRate.csv"}
+					 'InterestRate' : "prototype/input/ticker/InterestRate.csv",
+					 'Commodity' : "prototype/input/ticker/Commodity.csv"}
 
 	for asset_class, path_file in map_attribute.items():
 		Ticker(path_file,asset_class)
@@ -105,4 +106,10 @@ def cleaning_data(data: pd.DataFrame, start_date : datetime, end_date : datetime
 	
 	logger.info(f'cleaning completed, n. records: {len(df)}')
 	return df
+
+def is_interest_rate(ticker : str):
+	if ticker in Ticker.assetClassMap:
+		return  Ticker.assetClassMap[ticker] == 'InterestRate'
+	else: return  False
+
 
