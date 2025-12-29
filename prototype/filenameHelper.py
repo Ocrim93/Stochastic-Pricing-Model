@@ -13,7 +13,7 @@ class FileName:
 			  ,is_interest_rate_flag):
 		
 		folder_output = f'{base_folder_output}/{ticker}'
-		filename =  f"{ticker}_"+ f"({currency})" if is_interest_rate_flag else ""+\
+		filename =  f"{ticker}_"+ (f"({currency})" if not is_interest_rate_flag else "_")+\
 					f"{start_date}_"+\
 					f"{end_date}_"+\
 					f"{frequency}_{source}"
@@ -22,11 +22,11 @@ class FileName:
 
 	@staticmethod
 	def pair(base_folder_output
-			  ,ticker
-			  ,start_date
-			  ,end_date
-			  ,frequency
-			  ,source):
+			 ,ticker
+			 ,start_date
+			 ,end_date
+			 ,frequency
+			 ,source):
 
 		folder_output = f'{base_folder_output}/{ticker}'
 		filename = f"{ticker}_"+\
