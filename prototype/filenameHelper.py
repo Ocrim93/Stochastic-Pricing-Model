@@ -13,7 +13,7 @@ class FileName:
 			  ,is_interest_rate_flag):
 		
 		folder_output = f'{base_folder_output}/{ticker}'
-		filename =  f"{ticker}_"+ (f"({currency})" if not is_interest_rate_flag else "_")+\
+		filename =  f"{ticker}_"+ (f"({currency})_" if not is_interest_rate_flag else "")+\
 					f"{start_date}_"+\
 					f"{end_date}_"+\
 					f"{frequency}_{source}"

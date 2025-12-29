@@ -44,7 +44,7 @@ def setting_layout(figure,title,x_axis,y_axis,x_axis_type = 'date'):
 		    title_font_color=GRAPH.title_font_color,
 		    legend_title_font_color=GRAPH.legend_title_font_color,
 		    title=dict(text=title , font=dict(size=GRAPH.title_font_size), yref='paper'),
-		    xaxis_title=x_axis ,
+		    xaxis_title=x_axis,
 		    xaxis=dict(type= x_axis_type),
     		yaxis_title= y_axis
     )
