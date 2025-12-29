@@ -67,8 +67,8 @@ Choice for ```action``` :
  Retrive and plot custom pairing, like SPX vs GOLD. 
  Syntax on the ticker paramter as ```SPX_GC```, using ```_``` delimeter.
 ### Source
- - yahooFinance as ```yahoo```
- - FRED as as ```fred``` for Overnight reference rates and Macro Economic indexes
+ - yahooFinance as ```yahoo```.
+ - FRED as ```fred``` for Overnight reference rates and Macro Economic indexes.
  - European Central Bank as ```ECB``` for €STER. 
 
 
