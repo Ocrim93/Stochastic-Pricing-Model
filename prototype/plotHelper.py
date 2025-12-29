@@ -11,10 +11,10 @@ class Plot:
 		fig_title = ' '.join(filename.split('_'))
 		
 		if is_interest_rate_flag:
-			price_fig = create_figure(data,f"{fig_title}",M.DATE, M.CLOSE)
+			price_fig = create_figure(data,fig_title,M.DATE, M.CLOSE)
 		else:
-			price_fig = create_candlestick(data,f"{fig_title}",M.DATE, M.CLOSE)
-		price_fig = adding_line(price_fig, data, M.CLOSE, M.DATE,M.CLOSE)
+			price_fig = create_candlestick(data,fig_title,M.DATE, M.CLOSE)
+			price_fig = adding_line(price_fig, data, M.CLOSE, M.DATE,M.CLOSE)
 
 		data[M.LOG_PCT] = 100*data[M.LOG_PCT]
 		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT, bar_flag = True)
@@ -25,11 +25,10 @@ class Plot:
 	def pair(data : pd.DataFrame, filename : str):
 		fig_title = ' '.join(filename.split('_'))
 	
-		price_fig = create_figure(data,f"{fig_title}",M.DATE, M.CLOSE)
+		price_fig = create_figure(data,fig_title,M.DATE, M.CLOSE)
 		
 		data[M.LOG_PCT] = 100*data[M.LOG_PCT]
-		pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT, bar_flag = True)
-		#pct_fig = create_figure(data,f"{fig_title}",M.DATE,M.LOG_PCT)
+		pct_fig = create_figure(data,fig_title,M.DATE,M.LOG_PCT, bar_flag = True)
 
 		return price_fig,pct_fig
 	
