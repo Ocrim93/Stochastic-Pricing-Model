@@ -242,11 +242,12 @@ class Action():
 
 	def save_data(self,data , name: str = '' ):
 		create_folder(self.folder_output)
+		filename = f'{self.filename}' + ( f'_{name}' if name != '' else '')
 		if data.empty:
-			logger.warning(f'empty data, not saved, {self.filename}_{name}')
+			logger.warning(f'empty data, not saved, {filename}')
 		else:
-			logger.info(f'saving data {self.filename} {name}')
-			data.to_csv(f'{self.folder_output}/{self.filename}_{name}.csv')
+			logger.info(f'saving data {filename}')
+			data.to_csv(f'{self.folder_output}/{filename}.csv')
 
 	def save_plot(self,figure, extension = 'html', PLOT = False):
 		filename = figure.layout['title']['text'].replace(' ', '_')
